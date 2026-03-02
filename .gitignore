@@ -1,0 +1,53 @@
+# Node modules
+node_modules/
+
+# Playwright
+test-results/
+playwright-report/
+playwright/.cache/
+
+# TypeScript
+dist/
+*.tsbuildinfo
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Authentication state
+auth.json
+
+# Playwright MCP traces / session data
+.playwright-mcp/
+
+# Claude / Copilot local settings
+.claude/
+
+# Misc test artifacts
+test-data.zip
+nul
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache

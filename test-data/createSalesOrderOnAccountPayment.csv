@@ -1,0 +1,4 @@
+testCaseId,description,searchByOption,searchText,itemNumber,quantity,expectedNetAmount,paymentMethodFilter,percentAmount
+TC_001,Create sales order with standard item and account payment,0,100001,246684-001,10.00,220.0000000000000000,3,100
+TC_002,Create sales order with different quantity,0,100001,246684-001,5.00,110.0000000000000000,3,100
+TC_003,Create sales order with alternate customer,0,100001,246684-001,10.00,220.0000000000000000,3,50

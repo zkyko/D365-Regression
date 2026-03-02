@@ -1,0 +1,88 @@
+O2C	Order Entry	Scenario 2	Order Entry | Scenario 2	P0			Create a website sales order for credit card customer that is ship completeand autoship. Delivery terms are prepaid and expedited carrier service. Use an item that in on LTO and in stock. The SO has a requested ship date of today. Ensure the minimum freight charges are showing correctly for this expedited shipment. Validate that the carrier is auto-selected and that the shipment is marked as palletized in Korber. Enter BOL notes on the sales order. Ensure delivery reason is WEB. 
+O2C	Pricing	Scenario 11	Pricing | Scenario 11	P0			Ensure pricing is correct from scenario 2. 
+O2C	Shipment Builder	Scenario 21	Shipment Builder | Scenario 21	P0			Create a shipment with sales order from scenario 2. 
+O2C	Shipment Builder	Scenario 30	Shipment Builder | Scenario 30	P0			Ensure WMS fully picks and ships the shipment from scenario 21 and sends this information to D365.
+O2C	Shipment Builder	Scenario 35	Shipment Builder | Scenario 35	P0			Ensure WMS fully picks and ships the shipment from scenario 26 and sends this information to D365.
+O2C	Shipment Builder	Scenario 36	Shipment Builder | Scenario 36	P0			Ensure WMS fully picks and ships the shipment from scenario 27 and sends this information to D365.
+O2C	Shipment Builder	Scenario 37	Shipment Builder | Scenario 37	P0			Ensure WMS fully picks and ships the shipment from scenario 28 and sends this information to D365.
+O2C	Shipment Builder	Scenario 38	Shipment Builder | Scenario 38	P0			Ensure shipment from scenario 20 is invoiced. 
+O2C	Shipment Builder	Scenario 39	Shipment Builder | Scenario 39	P0			Ensure shipment from scenario 21 is invoiced. 
+O2C	Shipment Builder	Scenario 40	Shipment Builder | Scenario 40	P0			Ensure shipment from scenario 22 is invoiced. 
+O2C	Shipment Builder	Scenario 41	Shipment Builder | Scenario 41	P0			Ensure shipment from scenario 23 is invoiced. 
+O2C	Shipment Builder	Scenario 42	Shipment Builder | Scenario 42	P0			Ensure shipment from scenario 24 is invoiced. 
+O2C	Shipment Builder	Scenario 43	Shipment Builder | Scenario 43	P0			Ensure shipment from scenario 25 is invoiced. 
+O2C	Shipment Builder	Scenario 44	Shipment Builder | Scenario 44	P0			Ensure shipment from scenario 26 is invoiced. 
+O2C	Shipment Builder	Scenario 45	Shipment Builder | Scenario 45	P0			Ensure shipment from scenario 27 is invoiced. 
+O2C	Shipment Builder	Scenario 46	Shipment Builder | Scenario 46	P0			Ensure shipment from scenario 28 is invoiced. 
+O2C	Pricing	Scenario 55	Pricing | Scenario 55	P0			Create a sales order with an item that is in stock. Complete and confirm the sales order. Override the price on the sales order line. Ensure the reason code prompt appears. 
+O2C	Customer Master	Scenario 56	Customer Master | Scenario 56	P1			Modify the customer account (change charges group, account status, AE/SS, et)
+O2C	Customer Master	Scenario 57	Customer Master | Scenario 57	P1			Update the payment method on a customer account and verify transaction processing.
+O2C	D Channel	Scenario 58	D Channel | Scenario 58	P0			Create a manual D channel order for a customer that carries their own freight and requires a deposit. Ensure ship window is set. Add an LCL fee. 
+O2C	D Channel	Scenario 59	D Channel | Scenario 59	P0			Create a manual D channel order for a customer where we carry freight and requires a deposit. Ensure ship window is set. Add freight charges. 
+O2C	D Channel	Scenario 60	D Channel | Scenario 60	P0			Create a manual D channel order for a customer that carries their own freight and does not require a deposit. Ensure ship window is set. Add a transportation charge. 
+O2C	D Channel	Scenario 61	D Channel | Scenario 61	P0			Create a manual D channel order for a customer where we carry freight and we do not require a deposit.Ensure ship window is set. Add freight charges
+O2C	D Channel	Scenario 62	D Channel | Scenario 62	P0			Create an EDI D channel order for a customer where we carry freight and requires a deposit. Ensure ship window is set. 
+O2C	D Channel	Scenario 63	D Channel | Scenario 63	P0			Create an EDI D channel order for a customer that carries their own freight and does not require a deposit. Ensure ship window is set. 
+O2C	D Channel	Scenario 64	D Channel | Scenario 64	P0			Set up a container specific item at the item master for direct delivery. Create a manual W channel order with this item and ensure the direct delivery is set at the item line and we cannot complete the order.
+O2C	D Channel	Scenario 65	D Channel | Scenario 65	P0			Create a D channel order with items from 2 different vendors. Ensure the correct vendor account is showing. 
+O2C	D Channel	Scenario 66	D Channel | Scenario 66	P0			Post a packing slip upon confirmation of delivery of goods
+O2C	D Channel	Scenario 67	D Channel | Scenario 67	P0			Change quantity of items on order from scenario 59.
+O2C	D Channel	Scenario 68	D Channel | Scenario 68	P0			Update price on order from scenario 59.
+O2C	D Channel	Scenario 69	D Channel | Scenario 69	P0			Add sales order line after the PO has been created for a customer carries freight D channel order. 
+O2C	D Channel	Scenario 70	D Channel | Scenario 70	P0			Add sales order line after the PO has been created for a FH carries freight D channel order. 
+O2C	D Channel	Scenario 71	D Channel | Scenario 71	P0			Apply deposit from scenario 58.
+O2C	D Channel	Scenario 72	D Channel | Scenario 72	P0			Apply deposit from scenario 59.
+O2C	D Channel	Scenario 73	D Channel | Scenario 73	P0			Cancel Direct Delivery Sales Order.  Ensure Allocations do not stick and related PO cancels as well
+O2C	D Channel	Scenario 74	D Channel | Scenario 74	P0			Cancel one line from sales order in scenario 69.  Ensure allocations do not stick. 
+O2C	D Channel	Scenario 75	D Channel | Scenario 75	P0			Cancel sales order from scenario 63. Ensure allocations do not stick. 
+O2C	Returns & Credits	Scenario 76	Returns & Credits | Scenario 76	P0			Create a credit memo without inventory returning, without sending a replacement. Print the RMA document. 
+O2C	Returns & Credits	Scenario 77	Returns & Credits | Scenario 77	P0			Create a credit with inventory returning. Print the RMA document. 
+O2C	Returns & Credits	Scenario 78	Returns & Credits | Scenario 78	P0			Create a replacement without inventory returning. Leave inspection notes on the replacement. Make sure the inspection notes carry through to Korber. Print the RMA document. 
+O2C	Returns & Credits	Scenario 79	Returns & Credits | Scenario 79	P0			Create a replacement with inventory returning. Leave inspection notes on the replacement. Make sure the inspection notes carry through to Korber. Print the RMA document. 
+O2C	Returns & Credits	Scenario 80	Returns & Credits | Scenario 80	P0			Apply a credit for customer using the "on account" feature. 
+O2C	Returns & Credits	Scenario 81	Returns & Credits | Scenario 81	P0			Create a sales order for a customer where the sales order total is less than the credit available on the account. Push the order through shipment builder. Apply the credit to cover the full balance of the sales order. 
+O2C	Returns & Credits	Scenario 82	Returns & Credits | Scenario 82	P0			Create a sales order for a customer where the sales order total is more than the credit available on the account. Pushe the order through shipment builder. Apply the credit to the sales order. Add another method of payment to cover the remaining balance on the sales order. 
+O2C	Returns & Credits	Scenario 83	Returns & Credits | Scenario 83	P0			Create a credit memo without inventory returning, without sending a replacement. The original sales order does not exist in D365. Print the RMA document. 
+O2C	Returns & Credits	Scenario 84	Returns & Credits | Scenario 84	P0			Create a credit with inventory returning. The original sales order does not exist in D365. Print the RMA document. 
+O2C	Returns & Credits	Scenario 85	Returns & Credits | Scenario 85	P0			Create a replacement without inventory returning. The original sales order does not exist in D365. Print the RMA document. 
+O2C	Returns & Credits	Scenario 86	Returns & Credits | Scenario 86	P0			Create a replacement with inventory returning. The original sales order does not exist in D365. Print the RMA document. 
+O2C	Returns & Credits	Scenario 87	Returns & Credits | Scenario 87	P0			Pick and pack the replacement from scenario 78.
+O2C	Returns & Credits	Scenario 88	Returns & Credits | Scenario 88	P0			Pick and pack the replacement from scenario 86.
+O2C	Shipment Builder	Scenario 89	Shipment Builder | Scenario 89	P1	Kiran		Create a sales order with just small art on it (something that can be parcel). The item is in stock. Delivery terms are third party, carrier is FedEx ground.  Create a shipment. Check to see what happens in Korber. 
+O2C	Shipment Builder	Scenario 90	Shipment Builder | Scenario 90	P1			Create a sales order with just large art. The item is not stock. Delivery terms are third party, carrier is LTL. Create a shipment. Check to see what happens in Korber. 
+O2C	Shipment Builder	Scenario 91	Shipment Builder | Scenario 91	P1	Kiran		Create a sales order with art and furniture. The item is in stock. Delivery terms are third party, carrier is LTL. Create a shipment. Check to see what happens in Korber. 
+O2C	Retail	Scenario 92	Retail | Scenario 92	P0			Create a retail sales order, pick and pack the sales order outside of shipment builder. Post the invoice. Ensure inventory is reflected properly (Retail cash and carry ezample). 
+O2C	Retail	Scenario 93	Retail | Scenario 93	P0	Kiran		Create a sales order with an item that is in stock and the requested ship date is today. Use a one time customer. Create a shipment. 
+O2C	Retail	Scenario 94	Retail | Scenario 94	P0			Create a retail sales order , pick and pack the sales order outside of shipment builder. Apply an existing credit from the customer's account. 
+O2C	Allocations	Scenario 95	Allocations | Scenario 95	P0			Create a sales order with an item that is in stock and requested ship date is today. Complete and confirm the order. Put the sales order on an incomplete order hold. Ensure reservations are stripped. Ensure shipment cannot be created. 
+O2C	Allocations	Scenario 96	Allocations | Scenario 96	P0			Create a sales order with an item that is in stock and requested ship date is today. Complete and confirm the order. Put the sales order on soft order hold. order hold. The order should still be reserved. Ensure shipment cannot be created
+O2C	Returns & Credits	Scenario 97	Returns & Credits | Scenario 97	P1			Create a return order with a credit memo, don't return the money to the credit card, return it to the account. Use the credit on account for the replacement order. 
+O2C	Pricing	Scenario 98	Pricing | Scenario 98	P1			Test Pricing on imported Web ordr with MSA coupon
+O2C	Pricing	Scenario 99	Pricing | Scenario 99	P1			Test Pricing on imported Web order with MSA coupon and Amber Lewis SKUs (no discount)
+O2C	Pricing	Scenario 100	Pricing | Scenario 100	P2			Test Pricing on imported Web order with LTO and add a coupon to it
+O2C	Pricing	Scenario 101	Pricing | Scenario 101	P3			Test Pricing on imported Web order with hardmark and manually override the price
+O2C	Pricing	Scenario 102	Pricing | Scenario 102	P0			Test 3 Wayfair Order and insure 850 price comes in
+O2C	Pricing	Scenario 103	Pricing | Scenario 103	P0			Test 3 & 3 West Elm Lulu Orders and ensure the price comes correctly
+							
+O2C	Pricing	Scenario 104	Pricing | Scenario 104	P0			Test 3 Lumens Orders and ensure the price comes correctly for trade account 
+							
+O2C	Pricing	Scenario 105	Pricing | Scenario 105	P1			Ensure that loyalty batch job operate as needed when customer tier expires
+O2C	Pricing	Scenario 106	Pricing | Scenario 106	P1			Validate that pricing is showing correctly on all customer documents
+O2C	Pricing	Scenario 107	Pricing | Scenario 107	P0			Confirm that moving a customer up a tier correctly updates their pricing for new orders
+O2C	Pricing	Scenario 108	Pricing | Scenario 108	P1			Add a coupon to exciting order, make sure price is correct
+O2C	Product	Scenario 109	Pricing | Scenario 109	P0			Ensure the product load and update process works as expected
+O2C	Allocations	Scenario 110	Allocations | Scenario 110	P0			Unreserve an item in the inventory allocation exception workbench
+O2C	Allocations	Scenario 111	Allocations | Scenario 111	P0			Reserve an item in the inventory allocation exception workbench 
+O2C	Allocations	Scenario 112	Allocations | Scenario 112	P0			Manually move an allocation from one sales order to another in the inventory allocation exception workbench
+O2C	Allocations	Scenario 113	Allocations | Scenario 113	P0	Kiran		Unreserve an item in the reservation form on the sales order by clicking "allocate lot"
+O2C	Allocations	Scenario 114	Allocations | Scenario 114	P0	Kiran		Reserve an item in the reservation form on the sales order by clicking "reserve lot"
+O2C	Inventory Feed	Scenario 115	Inventory Feed | Scenario 115	P0			Add item to a customer assortment for a customer that uses an emailed inventory feed, ensure the items show on the feed. 
+O2C	Inventory Feed	Scenario 116	Inventory Feed | Scenario 116	P0			Add items to a customer assortment for a customer that uses an assortment for an 846, ensure the items show on the feed. 
+O2C	Shipment Builder	Scenario 117	Shipment Builder| Scenario 117	P0			Cancel a shipment, put the sales order on a new shipment and release to koerber. 
+O2C	Inventory Feed	Scenario 118	Inventory Feed | Scenario 118	P0			Remove an item to a customer assortment for a customer that uses an emailed inventory feed, ensure the items show on the feed. 
+O2C	Inventory Feed	Scenario 119	Inventory Feed | Scenario 119	P0			Remove an items to a customer assortment for a customer that uses an assortment for an 846, ensure the items show on the feed. 
+O2C	D Channel	Scenario 120	D Channel | Scenario 120	P0			Change address on SO from Scenario 58.  Ensure change flows through to PO in both address and address name field
+O2C	D Channel	Scenario 121	D Channel | Scenario 120	P0			Change address on SO from Scenario 59.  Ensure change flows through to PO in both address and address name field
+O2C	D Channel	Scenario 122	D Channel | Scenario 120	P0			Create and process SO and PO for a SKU without variant
+O2C	D Channel	Scenario 123	D Channel | Scenario 120	P0			Create and Process SO and PO for a SKU with a variant.  Ensure each variant defaults to the correct vendor at the SO line level
+O2C	D Channel	Scenario 123	D Channel | Scenario 120	P0			Create and process and un-linked SO and PO through BW 

@@ -1,0 +1,90 @@
+Scenario-1
+Notes : This scenario covers below case description . 
+Create a website sales order for credit card customer and autoship. Delivery terms are prepaid and B2B carrier service. Use and item that is a bundle with stock. The SO has a requested ship date of today. Ensure delivery reason is WEB. Ensure pricing is correct from scenario 1. Create a shipment with sales order from scenario 1. Ensure WMS fully picks and ships the shipment from scenario 20 and sends this information to D365. Ensure shipment from scenario 20 is invoiced. While automating make a note to make sure the bundle item number provided in below steps has inventory before we trigger the automation
+
+2. Go to Sales and marketing > Sales orders > All sales orders.
+3. Click New.
+4. In the Customer account field, type a value. (100012)
+5. In the Customer PO field, type a value.
+6. Click OK.
+7. On the Action Pane, click Sell.
+8. In the list, mark the selected row.
+9. In the Item number field, enter or select a value. (Item Number : 250642-002)
+10. In the list, click the link in the selected row.
+11. Click Save.
+12. Click the Header tab.
+13. In the Ship Type field, enter or select a value.
+14. In the list, click the link in the selected row.
+15. Click Complete.
+16. Click Add.
+17. In the Number field, enter or select a value.
+18. In the list, select row 4.
+19. In the list, click the link in the selected row.
+20. Click OK.
+21. Click Submit.
+22. Click the Lines tab.
+23. In the list, find and select the desired record.
+24. Click Inventory.
+25. Click Reservation.
+26. Click Reserve lot.
+27. Close the page.
+28. In the list, find and select the desired record.
+29. In the list, find and select the desired record.
+30. Click Inventory.
+31. In the list, unmark the selected row.
+32. In the list, find and select the desired record.
+33. Click Inventory.
+34. Click Reservation.
+35. Click Reserve lot.
+36. Close the page.
+37. In the list, unmark the selected row.
+38. In the list, find and select the desired record.
+39. Click Inventory.
+40. Click Reservation.
+41. Click Reserve lot.
+42. Close the page.
+43. Click Confirm now.
+44. Click the Header tab.
+45. Click Sales order confirmation.
+46. Verify the Price is correct
+47. Close the page.
+48. Go to Retail and Commerce > Customers > Shipment builder > Candidate for shipping.
+49. Expand the Records to include section.
+50. Click Filter.
+51. In the list, find and select the desired record.
+52. In the Criteria field, enter or select a value.
+53. Click Today.
+54. Click OK.
+55. Click OK.
+56. Go to Retail and Commerce > Customers > Shipment builder > Grouping.
+57. Click OK.
+58. Go to Retail and Commerce > Customers > Shipment builder > Shipment builder.
+59. Open Shipment group column filter.
+60. In the list, find and select the desired record.
+61. In the list, click the link in the selected row.
+62. On the Action Pane, click Shipments.
+63. Click Create shipment.
+64. Click Yes.
+65. Verify the Koerber status must be "Released" for Ship type as Auto Ship
+66. Click to follow the link in the Sales order field.
+67. In the list, mark the selected row.
+68. On the Action Pane, click Pick and pack.
+69. Click Picking list registration.
+70. Select the Select check box.
+71. In the list, find and select the desired record.
+72. Select the Select check box.
+73. In the list, find and select the desired record.
+74. Select the Select check box.
+75. Click Updates.
+76. Click Update all.
+77. Close the page.
+78. Click Post packing slip.
+79. Click OK.
+80. Click OK.
+81. On the Action Pane, click Invoice.
+82. Click Invoice.
+83. Click OK.
+84. Click OK.
+85. Refresh the page.
+86. Click the Header tab.
+87. Validate the Document Status must be �Invoice�

@@ -1,0 +1,153 @@
+Scenario-2 
+
+Notes : This scenario covers below case description .  
+
+Create a website sales order for credit card customer that is ship complete and auto ship. Delivery terms are prepaid and expedited carrier service. Use an item that in on LTO and in stock. The SO has a requested ship date of today. Ensure the minimum freight charges are showing correctly for this expedited shipment. Validate that the carrier is auto-selected and that the shipment is marked as palletized in Korber. Enter BOL notes on the sales order. Ensure delivery reason is WEB. Ensure WMS fully picks and ships the shipment from and sends this information to D365. Ensure shipment is invoiced. While automating make a note to make sure the LTO item number provided in below steps has inventory before we trigger the automation 
+
+ 
+
+Go to Sales and marketing > Sales orders > All sales orders. 
+
+Click New. 
+
+In the Customer account field, type a value. (100012) 
+
+In the Customer PO field, type a value. 
+
+Click OK. 
+
+On the Action Pane, click Sell. 
+
+In the Order Source field , select a value “WEB” 
+
+In the Ship Complete field ,set to “YES” 
+
+In the list, mark the selected row. 
+
+In the Item number field, enter or select a value. (Item Number : 243450-002) 
+
+In the list, click the link in the selected row. 
+
+Click Save. 
+
+Click the Header tab. 
+
+In the Ship Type field, enter or select a value “Auto Ship” 
+
+In the list, click the link in the selected row. 
+
+Click Complete. 
+
+Click Add. 
+
+In the Number field, enter or select a value. 
+
+In the list, select row with credit card number 1111. 
+
+In the list, click the link in the selected row. 
+
+Click OK. 
+
+Click Submit. 
+
+Click the Lines tab. 
+
+In the list, find and select the desired record. 
+
+Click Inventory. 
+
+Click Reservation. 
+
+Click Reserve lot. 
+
+Close the page. 
+
+Click Confirm now. 
+
+Click the Header tab. 
+
+Click Sales order confirmation. 
+
+Verify the Price is correct 
+
+Close the page. 
+
+Go to Retail and Commerce > Customers > Shipment builder > Candidate for shipping. 
+
+Expand the Records to include section. 
+
+Click Filter. 
+
+In the list, find and select the desired record. 
+
+In the Criteria field, enter or select a value. 
+
+Click Today. 
+
+Click OK. 
+
+Click OK. 
+
+Go to Retail and Commerce > Customers > Shipment builder > Grouping. 
+
+Click OK. 
+
+Go to Retail and Commerce > Customers > Shipment builder > Shipment builder. 
+
+Open Shipment group column filter. 
+
+In the list, find and select the desired record. 
+
+In the list, click the link in the selected row. 
+
+On the Action Pane, click Shipments. 
+
+Click Create shipment. 
+
+Click Yes. 
+
+Verify the Koerber status must be "Released" for Ship type as Auto Ship 
+
+Click to follow the link in the Sales order field. 
+
+In the list, mark the selected row. 
+
+On the Action Pane, click Pick and pack. 
+
+Click Picking list registration. 
+
+Select the Select check box. 
+
+In the list, find and select the desired record. 
+
+Select the Select check box. 
+
+In the list, find and select the desired record. 
+
+Select the Select check box. 
+
+Click Updates. 
+
+Click Update all. 
+
+Close the page. 
+
+Click Post packing slip. 
+
+Click OK. 
+
+Click OK. 
+
+On the Action Pane, click Invoice. 
+
+Click Invoice. 
+
+Click OK. 
+
+Click OK. 
+
+Refresh the page. 
+
+Click the Header tab. 
+
+Validate the Document Status must be “Invoice” 
