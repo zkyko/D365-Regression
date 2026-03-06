@@ -188,15 +188,30 @@ export class AllocationWorkbenchPage extends BasePage {
    * @param holdType  e.g. "Incomplete", "Soft" (use actual D365 hold code values)
    */
   async applyOrderHold(holdType: string): Promise<void> {
-    // TODO: implement after locators are confirmed
-    // await this.orderHoldsBtn.click();
-    // await this.page.waitForTimeout(300);
-    // await this.holdTypeCombo.fill(holdType);
-    // await this.holdTypeCombo.press('Tab');
-    // await this.applyHoldBtn.click();
-    // await this.waitForProcessing();
-    console.warn('⚠ AllocationWorkbenchPage.applyOrderHold() — TODO: not yet implemented');
-    throw new Error('AllocationWorkbenchPage.applyOrderHold() not yet implemented');
+    await this.page.getByRole("button", { name: "Order holds" }).click();
+    await this.waitForProcessing();
+    await this.page.waitForTimeout(500);
+
+    const newBtn = this.page.getByRole("button", { name: "New" }).first();
+    if (await newBtn.isVisible({ timeout: 5_000 }).catch(() => false)) {
+      await newBtn.click();
+      await this.page.waitForTimeout(300);
+    }
+
+    const holdCodeInput = this.page.getByRole("textbox", { name: "Hold code" }).first();
+    await holdCodeInput.fill(holdType);
+    await holdCodeInput.press("Tab");
+    await this.page.waitForTimeout(500);
+
+    const saveBtn = this.page.getByRole("button", { name: "Save" }).first();
+    if (await saveBtn.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      await saveBtn.click();
+      await this.waitForProcessing();
+    }
+
+    await this.page.getByRole("button", { name: "Back" }).first().click();
+    await this.waitForProcessing();
+    await this.page.waitForTimeout(500);
   }
 
   /**
@@ -238,10 +253,23 @@ export class AllocationWorkbenchPage extends BasePage {
    * @param soNumber  The SO number that should be blocked
    */
   async verifyShipmentCannotBeCreated(soNumber: string): Promise<void> {
-    // TODO: implement — navigate to Shipment Builder, try to find the SO
-    // It should either not appear or show a "hold" indicator
-    // May need to navigate to Candidate for Shipping → filter by SO → verify empty
-    console.warn('⚠ AllocationWorkbenchPage.verifyShipmentCannotBeCreated() — TODO: not yet implemented');
-    throw new Error('AllocationWorkbenchPage.verifyShipmentCannotBeCreated() not yet implemented');
+    await this.navigateTo(
+      "Shipment builder",
+      "Shipment builder Retail and",
+      "**/*rsmShipmentBuilder*",
+    );
+
+    const filter = this.page.getByRole("combobox", { name: "Filter" }).first();
+    await filter.fill(soNumber);
+    await filter.press("Enter");
+    await this.page.waitForTimeout(1_500);
+
+    const noData = this.page.getByText("We didn't find anything to show here.").first();
+    if (await noData.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      return;
+    }
+
+    const matchingRow = this.page.getByRole("row").filter({ hasText: soNumber }).first();
+    await expect(matchingRow).not.toBeVisible({ timeout: 5_000 });
   }
 }

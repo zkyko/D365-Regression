@@ -1,0 +1,789 @@
+- generic:
+  - generic [ref=e28]:
+    - alert [ref=e29]: Warning Message bar text is Unsupported characters were removed from the field Delivery Name
+    - banner "Navigation bar" [ref=e30]:
+      - generic [ref=e31]:
+        - link "Office 365" [ref=e32] [cursor=pointer]:
+          - generic [ref=e34]: 
+        - button "Finance and Operations" [ref=e35] [cursor=pointer]:
+          - generic [ref=e36]:
+            - text: 
+            - generic [ref=e37]: Finance and Operations
+      - list [ref=e38]:
+        - listitem [ref=e507]:  Retail and Commerce
+        - listitem [ref=e508]:  Customers
+        - listitem [ref=e509]:  Customer service
+      - button "Current company is FH, activate to choose a company" [ref=e40] [cursor=pointer]: FH
+      - generic [ref=e41]:
+        - list [ref=e42]:
+          - listitem [ref=e43]:
+            - button "Copilot" [ref=e44] [cursor=pointer]:
+              - img "Image NavBarActions_SysCopilotChatPanel" [ref=e47]
+        - generic [ref=e48]:
+          - text: 
+          - button "Search" [ref=e49] [cursor=pointer]:
+            - generic [ref=e51]: 
+        - generic [ref=e52]:
+          - button "Show messages (Ctrl+Shift+F7) Open to view system messages." [ref=e53] [cursor=pointer]:
+            - text: 
+            - status "New messages are in the Action Center. The total number of new messages is:" [ref=e54]: "9"
+          - text:                            
+        - button "Feedback" [ref=e61] [cursor=pointer]:
+          - generic [ref=e63]: 
+        - generic [ref=e65] [cursor=pointer]:
+          - button "Settings" [ref=e66]:
+            - generic [ref=e67]:
+              - generic [ref=e68]: 
+              - text: 
+          - text:    
+        - generic [ref=e69] [cursor=pointer]:
+          - button "Help & Support" [ref=e70]:
+            - generic [ref=e71]:
+              - generic [ref=e72]: 
+              - text: 
+          - text:     
+        - text:  
+        - button "NB" [ref=e74] [cursor=pointer]:
+          - generic [ref=e75]: NB
+    - navigation "Navigation menu" [ref=e77]:
+      - button "Expand the navigation pane" [ref=e78] [cursor=pointer]: 
+      - tree [ref=e79]:
+        - treeitem "Home" [level=1] [ref=e80] [cursor=pointer]:
+          - generic [ref=e81]: 
+        - treeitem "Favorites" [level=1] [ref=e82] [cursor=pointer]:
+          - generic [ref=e83]: 
+        - treeitem "Recent" [level=1] [ref=e84] [cursor=pointer]:
+          - generic [ref=e85]: 
+        - treeitem "Workspaces" [level=1] [ref=e86] [cursor=pointer]:
+          - generic [ref=e87]: 
+        - treeitem "Modules" [level=1] [ref=e88] [cursor=pointer]:
+          - generic [ref=e89]: 
+    - main [ref=e90]:
+      - text: "                                                                                                                                 |                         :: :: :: :: :: :: :: :: :: :: :: :: :: :: :: :: :: :: :: :: ::         "
+      - form "Sales order:" [ref=e2707]:
+        - toolbar [ref=e2708]:
+          - button "Back" [ref=e2709] [cursor=pointer]:
+            - generic [ref=e2711]: 
+          - button "Show list" [ref=e2712] [cursor=pointer]:
+            - generic [ref=e2714]: 
+          - button " Save" [ref=e2715] [cursor=pointer]:
+            - generic [ref=e2716]:
+              - generic [ref=e2717]: 
+              - generic [ref=e2718]: Save
+          - button " New" [ref=e2719] [cursor=pointer]:
+            - generic [ref=e2720]:
+              - generic [ref=e2721]: 
+              - generic [ref=e2722]: New
+          - button " Delete" [ref=e2723] [cursor=pointer]:
+            - generic [ref=e2724]:
+              - generic [ref=e2725]: 
+              - generic [ref=e2726]: Delete
+          - button "Complete" [ref=e2727] [cursor=pointer]:
+            - generic [ref=e2728]:  Complete
+          - button "Sales order" [expanded] [ref=e2730] [cursor=pointer]
+          - button "Sell" [ref=e2732] [cursor=pointer]
+          - button "Manage" [ref=e2734] [cursor=pointer]
+          - button "Pick and pack" [ref=e2736] [cursor=pointer]
+          - button "Invoice" [ref=e2738] [cursor=pointer]
+          - button "Commerce" [ref=e2740] [cursor=pointer]
+          - button "General" [ref=e2742] [cursor=pointer]
+          - button "Warehouse" [ref=e2744] [cursor=pointer]
+          - button "Transportation" [ref=e2746] [cursor=pointer]
+          - button "Credit management" [ref=e2748] [cursor=pointer]
+          - button "Options" [ref=e2750] [cursor=pointer]
+          - button "Search for an action" [ref=e2752] [cursor=pointer]: 
+          - text: 
+          - button "Power Apps" [ref=e2754] [cursor=pointer]:
+            - generic [ref=e2755]:
+              - generic [ref=e2756]: 
+              - text: 
+          - button "Open in Microsoft Office" [ref=e2758] [cursor=pointer]:
+            - generic [ref=e2759]:
+              - generic [ref=e2760]: 
+              - text: 
+          - button "Attachments (0)" [ref=e2761] [cursor=pointer]:
+            - generic [ref=e2762]:
+              - generic [ref=e2763]: 
+              - generic [ref=e2764]: "0"
+          - button "Refresh" [ref=e2765] [cursor=pointer]:
+            - generic [ref=e2767]: 
+          - button "Open in new window" [ref=e2768] [cursor=pointer]:
+            - generic [ref=e2770]: 
+        - toolbar [ref=e2771]:
+          - generic [ref=e2772]:
+            - group "New" [ref=e2773]:
+              - generic [ref=e2774]: New
+              - button "Service order" [ref=e2775] [cursor=pointer]:
+                - generic [ref=e2776]:  Service order
+              - button "Purchase order" [disabled] [ref=e2777]:
+                - generic [ref=e2778]:  Purchase order
+              - button "Direct delivery" [disabled] [ref=e2779]:
+                - generic [ref=e2780]:  Direct delivery
+            - group "Maintain" [ref=e2781]:
+              - generic [ref=e2782]: Maintain
+              - button "Cancel" [ref=e2783] [cursor=pointer]:
+                - generic [ref=e2784]:  Cancel
+            - group "Payments" [ref=e2785]:
+              - generic [ref=e2786]: Payments
+              - button "Payments" [ref=e2787] [cursor=pointer]:
+                - generic [ref=e2788]:  Payments
+            - group "Copy" [ref=e2789]:
+              - generic [ref=e2790]: Copy
+              - button "From all" [ref=e2791] [cursor=pointer]:
+                - generic [ref=e2792]:  From all
+              - button "From journal" [ref=e2793] [cursor=pointer]:
+                - generic [ref=e2794]:  From journal
+            - group "View" [ref=e2795]:
+              - generic [ref=e2796]: View
+              - button "Totals" [ref=e2797] [cursor=pointer]:
+                - generic [ref=e2798]:  Totals
+              - button "Order events" [ref=e2799] [cursor=pointer]:
+                - generic [ref=e2800]:  Order events
+              - button "Detailed status" [ref=e2801] [cursor=pointer]:
+                - generic [ref=e2802]:  Detailed status
+            - group "Functions" [ref=e2803]:
+              - generic [ref=e2804]: Functions
+              - generic [ref=e2805]:
+                - button "Order credit" [disabled] [ref=e2806]:
+                  - generic [ref=e2807]:  Order credit
+                - button "Sales order recap" [ref=e2808] [cursor=pointer]:
+                  - generic [ref=e2809]:  Sales order recap
+              - generic [ref=e2810]:
+                - button "Order holds" [ref=e2811] [cursor=pointer]:
+                  - generic [ref=e2812]:  Order holds
+                - button "Re-process sales order" [ref=e2813] [cursor=pointer]:
+                  - generic [ref=e2814]:  Re-process sales order
+            - group "Attachments" [ref=e2815]:
+              - generic [ref=e2816]: Attachments
+              - button "Notes" [ref=e2817] [cursor=pointer]:
+                - generic [ref=e2818]:  Notes
+            - group "Email notification" [ref=e2819]:
+              - generic [ref=e2820]: Email notification
+              - button "Email notification log" [ref=e2821] [cursor=pointer]:
+                - generic [ref=e2822]:  Email notification log
+            - group "Clean up" [ref=e2823]:
+              - generic [ref=e2824]: Clean up
+              - button "Clean up sales update history" [ref=e2825] [cursor=pointer]:
+                - generic [ref=e2826]:  Clean up sales update history
+            - group "Engineering change management" [ref=e2827]:
+              - generic [ref=e2828]: Engineering change management
+              - button "New engineering change request" [ref=e2829] [cursor=pointer]:
+                - generic [ref=e2830]:  New engineering change request
+              - button "View engineering change requests" [ref=e2831] [cursor=pointer]:
+                - generic [ref=e2832]:  View engineering change requests
+            - group "Submit" [ref=e2833]:
+              - generic [ref=e2834]: Submit
+              - button "Sales order submission" [ref=e2835] [cursor=pointer]:
+                - generic [ref=e2836]:  Sales order submission
+          - button "" [ref=e2837] [cursor=pointer]
+        - button "Show filters" [ref=e2838] [cursor=pointer]:
+          - generic [ref=e2840]: 
+        - button "Related information" [ref=e2841] [cursor=pointer]:
+          - generic [ref=e2843]: 
+        - region "Sales order:" [ref=e2844]:
+          - generic [ref=e2845]:
+            - generic [ref=e2846]:
+              - heading "Sales order | Sales Order Details - Price Lock" [level=1] [ref=e2848]:
+                - link "Sales order" [ref=e2849]
+                - button "| Sales Order Details - Price Lock" [ref=e2850] [cursor=pointer]:
+                  - text: "|"
+                  - generic [ref=e2851]:  Sales Order Details - Price Lock
+                - text: "|"
+              - generic [ref=e2852]:
+                - text:  
+                - tabpanel [ref=e2853]:
+                  - generic [ref=e2854]:
+                    - generic [ref=e2855]: "SO000234412 : Nicole Roby Designs"
+                    - generic [ref=e2856]:
+                      - combobox "Status" [ref=e2857]: Open order
+                      - text: 
+                    - tablist [ref=e2858]:
+                      - tab "Lines" [selected] [ref=e2859] [cursor=pointer]
+                      - tab "Header" [ref=e2860] [cursor=pointer]
+                    - text:  
+                    - tabpanel "Lines" [ref=e2861]:
+                      - generic [ref=e2863]:
+                        - heading "Summary by Copilot" [level=2] [ref=e2865]:
+                          - button "Summary by Copilot" [ref=e2866] [cursor=pointer]: Summary by Copilot 
+                        - generic [ref=e2868]:
+                          - heading "Sales order header" [level=2] [ref=e2869]:
+                            - button "Sales order header" [expanded] [ref=e2870] [cursor=pointer]: Sales order header 
+                          - group "Sales order header" [ref=e2872]:
+                            - generic [ref=e2873]:
+                              - generic [ref=e2874]:
+                                - generic [ref=e2875]:
+                                  - generic [ref=e2876]: Customer account
+                                  - combobox "Customer account 100001 Click to follow link" [ref=e2877]: "100001"
+                                  - generic [ref=e2878] [cursor=pointer]: 
+                                - generic [ref=e2880]:
+                                  - generic [ref=e2881]: Invoice account
+                                  - combobox "Invoice account 100001 Click to follow link" [ref=e2882]: "100001"
+                                  - generic [ref=e2883] [cursor=pointer]: 
+                              - group "Delivery address" [ref=e2884]:
+                                - heading "Delivery address" [level=3] [ref=e2885]
+                                - generic [ref=e2886]: Name
+                                - textbox "Name" [ref=e2887]:
+                                  - /placeholder: ""
+                                  - text: Nicole Roby Designs
+                                - generic [ref=e2888]:
+                                  - generic "Delivery address" [ref=e2889]:
+                                    - generic [ref=e2890]: Delivery address
+                                    - generic [ref=e2891]:
+                                      - combobox "Delivery address Nicole Roby Designs Click to follow link" [ref=e2894]: Nicole Roby Designs
+                                      - generic [ref=e2895] [cursor=pointer]: 
+                                  - button "Other address" [ref=e2896] [cursor=pointer]:
+                                    - generic [ref=e2898]: 
+                                - generic [ref=e2899]:
+                                  - generic [ref=e2900]: Volume
+                                  - textbox "Volume" [ref=e2901]:
+                                    - /placeholder: ""
+                                    - text: "0.00"
+                                - generic [ref=e2902]:
+                                  - generic [ref=e2903]: Weight
+                                  - textbox "Weight" [ref=e2904]:
+                                    - /placeholder: ""
+                                    - text: "0.00"
+                                - generic [ref=e2905]:
+                                  - generic [ref=e2906]: Address
+                                  - textbox "Address" [ref=e2907]:
+                                    - /placeholder: ""
+                                    - text: 3409 5th Ave S Birmingham, AL 35222 USA
+                                  - generic [ref=e2908]: Company name
+                                  - textbox "Company name" [ref=e2909]:
+                                    - /placeholder: ""
+                            - group "Delivery date" [ref=e2911]:
+                              - heading "Delivery date" [level=3] [ref=e2912]
+                              - generic [ref=e2913]: Requested ship date
+                              - generic [ref=e2914]:
+                                - generic "Requested ship date" [ref=e2915]:
+                                  - text: 
+                                  - combobox "Requested ship date" [ref=e2916]: 3/3/2026
+                                - generic [ref=e2917] [cursor=pointer]: 
+                              - link "Simulate delivery dates" [ref=e2919] [cursor=pointer]:
+                                - generic [ref=e2920]: Simulate delivery dates
+                              - generic [ref=e2921]:
+                                - generic [ref=e2922]: Allocate to promise ship date
+                                - generic [ref=e2923]:
+                                  - generic "Allocate to promise ship date" [ref=e2924]:
+                                    - text: 
+                                    - combobox "Allocate to promise ship date" [ref=e2925]
+                                  - generic [ref=e2926] [cursor=pointer]: 
+                              - generic [ref=e2927]:
+                                - generic [ref=e2928]: Confirmed ship date
+                                - generic [ref=e2929]:
+                                  - generic "Confirmed ship date" [ref=e2930]:
+                                    - text: 
+                                    - combobox "Confirmed ship date" [ref=e2931]
+                                  - generic [ref=e2932] [cursor=pointer]: 
+                              - generic [ref=e2933]:
+                                - generic [ref=e2934]: Confirmed receipt date
+                                - generic [ref=e2935]:
+                                  - generic "Confirmed receipt date" [ref=e2936]:
+                                    - text: 
+                                    - combobox "Confirmed receipt date" [ref=e2937]
+                                  - generic [ref=e2938] [cursor=pointer]: 
+                                - generic [ref=e2939]: Requested receipt date
+                                - generic [ref=e2940]:
+                                  - generic "Requested receipt date" [ref=e2941]:
+                                    - text: 
+                                    - combobox "Requested receipt date" [ref=e2942]: 3/3/2026
+                                  - generic [ref=e2943] [cursor=pointer]: 
+                            - generic [ref=e2944]:
+                              - group "References" [ref=e2945]:
+                                - heading "References" [level=3] [ref=e2946]
+                                - generic [ref=e2947]: EDI PO Reference
+                                - textbox "EDI PO Reference" [ref=e2948]:
+                                  - /placeholder: ""
+                                - generic [ref=e2949]: Customer PO
+                                - textbox "Customer PO" [ref=e2950]:
+                                  - /placeholder: ""
+                              - group "Discounts" [ref=e2951]:
+                                - heading "Discounts" [level=3] [ref=e2952]
+                                - generic [ref=e2953]: Total manual discount percentage
+                                - textbox "Total manual discount percentage" [ref=e2954]:
+                                  - /placeholder: ""
+                                  - text: "0.00"
+                            - generic [ref=e2955]:
+                              - group "Shipment setup" [ref=e2956]:
+                                - heading "Shipment setup" [level=3] [ref=e2957]
+                                - generic [ref=e2958]: Validation error message
+                                - textbox "Validation error message" [ref=e2959]:
+                                  - /placeholder: ""
+                              - generic [ref=e2960]: Pick list authorization message
+                              - textbox "Pick list authorization message" [ref=e2961]:
+                                - /placeholder: ""
+                              - generic [ref=e2962]:
+                                - generic [ref=e2963]: Pick list authorization error
+                                - switch "Pick list authorization error" [disabled] [ref=e2964] [cursor=pointer]
+                                - generic "No" [ref=e2966]
+                            - generic [ref=e2967]:
+                              - group "Delivery details" [ref=e2968]:
+                                - heading "Delivery details" [level=3] [ref=e2969]
+                                - generic [ref=e2970]:
+                                  - generic [ref=e2971]: Ship complete
+                                  - switch "Ship complete" [ref=e2972] [cursor=pointer]
+                                  - generic "No" [ref=e2974]
+                              - group "Retail" [ref=e2975]:
+                                - heading "Retail" [level=3] [ref=e2976]
+                                - generic "Loyalty card number" [ref=e2977]:
+                                  - generic [ref=e2978]: Loyalty card number
+                                  - generic [ref=e2979]:
+                                    - combobox "Loyalty card number LCN00002 Click to follow link" [ref=e2982]: LCN00002
+                                    - generic [ref=e2983] [cursor=pointer]: 
+                              - generic [ref=e2984]:
+                                - generic [ref=e2985]: Order Source
+                                - combobox "Order Source Manual Click to follow link" [ref=e2986]: Manual
+                                - generic [ref=e2987] [cursor=pointer]: 
+                              - generic [ref=e2988]:
+                                - generic [ref=e2989]: Cancel shipment
+                                - switch "Cancel shipment" [ref=e2990] [cursor=pointer]
+                                - generic "No" [ref=e2992]
+                              - generic [ref=e2993]: Web coupon code Id
+                              - textbox "Web coupon code Id" [disabled] [ref=e2994]:
+                                - /placeholder: ""
+                              - text: 
+                            - generic [ref=e2995]:
+                              - generic [ref=e2996]: Carrier Account Information
+                              - textbox "Carrier Account Information" [ref=e2997]:
+                                - /placeholder: ""
+                              - generic [ref=e2998]: BOL Notes
+                              - textbox "BOL Notes" [ref=e2999]:
+                                - /placeholder: ""
+                              - generic [ref=e3000]: Carrier Notes
+                              - textbox "Carrier Notes" [ref=e3001]:
+                                - /placeholder: ""
+                              - generic [ref=e3002]: Order Comment
+                              - textbox "Order Comment" [ref=e3003]:
+                                - /placeholder: ""
+                              - generic [ref=e3004]: Created by
+                              - textbox "Created by" [ref=e3005]:
+                                - /placeholder: ""
+                                - text: nbhandari
+                              - generic [ref=e3006]: Created date and time
+                              - generic [ref=e3007]:
+                                - generic "Created date and time" [ref=e3008]:
+                                  - text: 
+                                  - textbox "Created date and time" [ref=e3009]:
+                                    - /placeholder: ""
+                                    - text: 3/3/2026 03:39:29 PM
+                                - text: 
+                        - generic [ref=e3010]:
+                          - heading "Sales order lines" [level=2] [ref=e3011]:
+                            - button "Sales order lines" [expanded] [ref=e3012]
+                          - group "Sales order lines" [ref=e3014]:
+                            - toolbar [ref=e3015]:
+                              - group [ref=e3016]:
+                                - group [ref=e3017]:
+                                  - button " Add line" [ref=e3018] [cursor=pointer]:
+                                    - generic [ref=e3019]:
+                                      - generic [ref=e3020]: 
+                                      - generic [ref=e3021]: Add line
+                                  - button " Add lines" [ref=e3022] [cursor=pointer]:
+                                    - generic [ref=e3023]:
+                                      - generic [ref=e3024]: 
+                                      - generic [ref=e3025]: Add lines
+                                  - button "Add products" [ref=e3026] [cursor=pointer]:
+                                    - generic [ref=e3027]:
+                                      - text: 
+                                      - generic [ref=e3028]: Add products
+                                  - button " Remove" [ref=e3029] [cursor=pointer]:
+                                    - generic [ref=e3030]:
+                                      - generic [ref=e3031]: 
+                                      - generic [ref=e3032]: Remove
+                                  - button "Cancel lines" [disabled] [ref=e3033]:
+                                    - generic [ref=e3034]:
+                                      - text: 
+                                      - generic [ref=e3035]: Cancel lines
+                                - group [ref=e3036]:
+                                  - button "Sales order line" [ref=e3038] [cursor=pointer]:
+                                    - generic [ref=e3039]:
+                                      - text: 
+                                      - generic [ref=e3040]: Sales order line
+                                  - button "Financials" [ref=e3042] [cursor=pointer]:
+                                    - generic [ref=e3043]:
+                                      - text: 
+                                      - generic [ref=e3044]: Financials
+                                  - button "Inventory" [ref=e3046] [cursor=pointer]:
+                                    - generic [ref=e3047]:
+                                      - text: 
+                                      - generic [ref=e3048]: Inventory
+                                  - button "Product and supply" [ref=e3050] [cursor=pointer]:
+                                    - generic [ref=e3051]:
+                                      - text: 
+                                      - generic [ref=e3052]: Product and supply
+                                  - button "Update line" [ref=e3054] [cursor=pointer]:
+                                    - generic [ref=e3055]:
+                                      - text: 
+                                      - generic [ref=e3056]: Update line
+                                - group [ref=e3057]:
+                                  - button "Warehouse" [ref=e3059] [cursor=pointer]:
+                                    - generic [ref=e3060]:
+                                      - text: 
+                                      - generic [ref=e3061]: Warehouse
+                                - group [ref=e3062]:
+                                  - button "Retail" [ref=e3064] [cursor=pointer]:
+                                    - generic [ref=e3065]:
+                                      - text: 
+                                      - generic [ref=e3066]: Retail
+                                - group [ref=e3067]:
+                                  - button "Engineering change" [ref=e3069] [cursor=pointer]:
+                                    - generic [ref=e3070]:
+                                      - text: 
+                                      - generic [ref=e3071]: Engineering change
+                              - text: 
+                            - grid "Order lines" [ref=e3075]:
+                              - generic [ref=e3076]:
+                                - row "Indicates the current status of the row, in particular if the row is up-to-date, has unsaved changes, has a validation issue, or is waiting for user input. Item number Variant number Product number Customer Sku Product name Line status Vendor Cancellation reason code Quantity Volume Ship Group Bundle Ship Group Delivery type Koerber line status Bundle net amount 850 Price Configuration Size Color Style Version Site Warehouse Batch number Location Serial number Inventory status License plate Owner Unit price Discount Net amount Discount percent Do not recalculate Price locked Delivery terms Carrier service Bundle line status Shipping carrier Shipment group Shipment id Grid options" [ref=e3078]:
+                                  - generic:
+                                    - generic [ref=e3080]:
+                                      - columnheader [ref=e3081]:
+                                        - checkbox "Select or unselect all rows" [ref=e3082] [cursor=pointer]:
+                                          - img [ref=e3087]
+                                      - columnheader "Indicates the current status of the row, in particular if the row is up-to-date, has unsaved changes, has a validation issue, or is waiting for user input." [ref=e3089]:
+                                        - status "Indicates the current status of the row, in particular if the row is up-to-date, has unsaved changes, has a validation issue, or is waiting for user input." [ref=e3090]:
+                                          - img [ref=e3095]
+                                    - generic [ref=e3098]:
+                                      - columnheader "Item number" [ref=e3099]:
+                                        - text: "::"
+                                        - generic "Item number Click to follow link" [ref=e3102]: Item number
+                                      - columnheader "Variant number" [ref=e3103]:
+                                        - text: "::"
+                                        - generic "Variant number Click to follow link" [ref=e3106]: Variant number
+                                      - columnheader "Product number" [ref=e3107]:
+                                        - text: "::"
+                                        - generic "Product number" [ref=e3110]
+                                      - columnheader "Customer Sku" [ref=e3111]:
+                                        - text: "::"
+                                        - generic "Customer Sku" [ref=e3114]
+                                      - columnheader "Product name" [ref=e3115]:
+                                        - text: "::"
+                                        - generic "Product name" [ref=e3118]
+                                      - columnheader "Line status" [ref=e3119]:
+                                        - text: "::"
+                                        - generic "Line status" [ref=e3122]
+                                      - columnheader "Vendor" [ref=e3123]:
+                                        - text: "::"
+                                        - generic "Vendor" [ref=e3126]
+                                      - columnheader "Cancellation reason code" [ref=e3127]:
+                                        - text: "::"
+                                        - generic "Cancellation reason code" [ref=e3130]
+                                      - columnheader "Quantity" [ref=e3131]:
+                                        - text: "::"
+                                        - generic "Quantity" [ref=e3134]
+                                      - columnheader "Volume" [ref=e3135]:
+                                        - text: "::"
+                                        - generic "Volume RMA Volume calculated" [ref=e3138]: Volume
+                                      - columnheader "Ship Group" [ref=e3139]:
+                                        - text: "::"
+                                        - generic "Ship Group Line grouping identifier" [ref=e3142]: Ship Group
+                                      - columnheader "Bundle Ship Group" [ref=e3143]:
+                                        - text: "::"
+                                        - generic "Bundle Ship Group" [ref=e3146]
+                                      - columnheader "Delivery type" [ref=e3147]:
+                                        - text: "::"
+                                        - generic "Delivery type" [ref=e3150]
+                                      - columnheader "Koerber line status" [ref=e3151]:
+                                        - text: "::"
+                                        - generic "Koerber line status Koerber status based on shipment" [ref=e3154]: Koerber line status
+                                      - columnheader "Bundle net amount" [ref=e3155]:
+                                        - text: "::"
+                                        - generic "Bundle net amount" [ref=e3158]
+                                      - columnheader "850 Price" [ref=e3159]:
+                                        - text: "::"
+                                        - generic "850 Price 850 Price" [ref=e3162]: 850 Price
+                                      - columnheader "Configuration" [ref=e3163]:
+                                        - text: "::"
+                                        - generic "Configuration Click to follow link" [ref=e3166]: Configuration
+                                      - columnheader "Size" [ref=e3167]:
+                                        - text: "::"
+                                        - generic "Size Click to follow link" [ref=e3170]: Size
+                                      - columnheader "Color" [ref=e3171]:
+                                        - text: "::"
+                                        - generic "Color Click to follow link" [ref=e3174]: Color
+                                      - columnheader "Style" [ref=e3175]:
+                                        - text: "::"
+                                        - generic "Style Click to follow link" [ref=e3178]: Style
+                                      - columnheader "Version" [ref=e3179]:
+                                        - text: "::"
+                                        - generic "Version Click to follow link" [ref=e3182]: Version
+                                      - columnheader "Site" [ref=e3183]:
+                                        - text: "::"
+                                        - generic "Site Click to follow link" [ref=e3186]: Site
+                                      - columnheader "Warehouse" [ref=e3187]:
+                                        - text: "::"
+                                        - generic "Warehouse Click to follow link" [ref=e3190]: Warehouse
+                                      - columnheader "Batch number" [ref=e3191]:
+                                        - text: "::"
+                                        - generic "Batch number Click to follow link" [ref=e3194]: Batch number
+                                      - columnheader "Location" [ref=e3195]:
+                                        - text: "::"
+                                        - generic "Location Click to follow link" [ref=e3198]: Location
+                                      - columnheader "Serial number" [ref=e3199]:
+                                        - text: "::"
+                                        - generic "Serial number Click to follow link" [ref=e3202]: Serial number
+                                      - columnheader "Inventory status" [ref=e3203]:
+                                        - text: "::"
+                                        - generic "Inventory status Click to follow link" [ref=e3206]: Inventory status
+                                      - columnheader "License plate" [ref=e3207]:
+                                        - text: "::"
+                                        - generic "License plate Click to follow link" [ref=e3210]: License plate
+                                      - columnheader "Owner" [ref=e3211]:
+                                        - text: "::"
+                                        - generic "Owner Click to follow link" [ref=e3214]: Owner
+                                      - columnheader "Unit price" [ref=e3215]:
+                                        - text: "::"
+                                        - generic "Unit price Sales price of line per price unit" [ref=e3218]: Unit price
+                                      - columnheader "Discount" [ref=e3219]:
+                                        - text: "::"
+                                        - generic "Discount" [ref=e3222]
+                                      - columnheader "Net amount" [ref=e3223]:
+                                        - text: "::"
+                                        - generic "Net amount" [ref=e3226]
+                                      - columnheader "Discount percent" [ref=e3227]:
+                                        - text: "::"
+                                        - generic "Discount percent" [ref=e3230]
+                                      - columnheader "Do not recalculate" [ref=e3231]:
+                                        - text: "::"
+                                        - generic "Do not recalculate Do not allow the sales line to recalculate the price/discount" [ref=e3234]: Do not recalculate
+                                      - columnheader "Price locked" [ref=e3235]:
+                                        - text: "::"
+                                        - generic "Price locked The price is locked and will not participate in pricing calculation unless it’s unlocked and recalculation is triggered." [ref=e3238]: Price locked
+                                      - columnheader "Delivery terms" [ref=e3239]:
+                                        - text: "::"
+                                        - generic "Delivery terms Click to follow link" [ref=e3242]: Delivery terms
+                                      - columnheader "Carrier service" [ref=e3243]:
+                                        - text: "::"
+                                        - generic "Carrier service" [ref=e3246]
+                                      - columnheader "Bundle line status" [ref=e3247]:
+                                        - text: "::"
+                                        - generic "Bundle line status" [ref=e3250]
+                                      - columnheader "Shipping carrier" [ref=e3251]:
+                                        - text: "::"
+                                        - generic "Shipping carrier" [ref=e3254]
+                                      - columnheader "Shipment group" [ref=e3255]:
+                                        - text: "::"
+                                        - generic "Shipment group Unique key for shipment group" [ref=e3258]: Shipment group
+                                      - columnheader "Shipment id" [ref=e3259]:
+                                        - text: "::"
+                                        - generic "Shipment id Click to follow link" [ref=e3262]: Shipment id
+                                    - columnheader "Grid options" [ref=e3265]:
+                                      - button "Grid options" [ref=e3271] [cursor=pointer]:
+                                        - img [ref=e3273]
+                                - row "The row is up to date. Open order 0.00 Stock Not released 0.00 0.00 US AUSTIN Do not recalculate Price locked PREPAID B2B" [ref=e3277]:
+                                  - generic:
+                                    - generic [ref=e3279]:
+                                      - gridcell [ref=e3280]:
+                                        - checkbox "Select or unselect row" [ref=e3281] [cursor=pointer]
+                                      - gridcell "The row is up to date." [ref=e3286]:
+                                        - status "The row is up to date." [ref=e3287]
+                                    - generic [ref=e3291]:
+                                      - gridcell [ref=e3292]:
+                                        - generic [ref=e3298]:
+                                          - combobox "Item number" [active] [ref=e3299]
+                                          - button "Open" [ref=e3300] [cursor=pointer]:
+                                            - img [ref=e3301]
+                                      - gridcell [ref=e3303]:
+                                        - generic [ref=e3309]:
+                                          - combobox "Variant number" [ref=e3310]
+                                          - button "Open" [ref=e3311] [cursor=pointer]:
+                                            - img [ref=e3312]
+                                      - gridcell [ref=e3314]:
+                                        - textbox "Product number" [ref=e3321]:
+                                          - /placeholder: ""
+                                      - gridcell [ref=e3322]:
+                                        - generic [ref=e3328]:
+                                          - combobox "Customer Sku" [ref=e3329]
+                                          - button "Open" [ref=e3330] [cursor=pointer]:
+                                            - img [ref=e3331]
+                                      - gridcell [ref=e3333]:
+                                        - textbox "Product name" [ref=e3340]:
+                                          - /placeholder: ""
+                                      - gridcell "Open order" [ref=e3341]:
+                                        - textbox "Line status" [ref=e3347] [cursor=pointer]: Open order
+                                      - gridcell [ref=e3348]:
+                                        - textbox "Vendor" [ref=e3355]:
+                                          - /placeholder: ""
+                                      - gridcell [ref=e3356]:
+                                        - textbox "Cancellation reason code" [ref=e3363]:
+                                          - /placeholder: ""
+                                      - gridcell [ref=e3364]:
+                                        - textbox "Quantity" [ref=e3371]:
+                                          - /placeholder: ""
+                                      - gridcell "0.00" [ref=e3372]:
+                                        - textbox "Volume" [ref=e3379]:
+                                          - /placeholder: ""
+                                          - text: "0.00"
+                                      - gridcell [ref=e3380]:
+                                        - textbox "Ship Group" [ref=e3387]:
+                                          - /placeholder: ""
+                                      - gridcell [ref=e3388]:
+                                        - textbox "Bundle Ship Group" [disabled] [ref=e3395]:
+                                          - /placeholder: ""
+                                      - gridcell "Stock" [ref=e3396]:
+                                        - generic [ref=e3401]:
+                                          - combobox "Delivery type" [ref=e3402] [cursor=pointer]: Stock
+                                          - button "Open" [ref=e3403] [cursor=pointer]:
+                                            - img [ref=e3404]
+                                      - gridcell "Not released" [ref=e3406]:
+                                        - textbox "Koerber line status" [ref=e3412] [cursor=pointer]: Not released
+                                      - gridcell "0.00" [ref=e3413]:
+                                        - textbox "Bundle net amount" [disabled] [ref=e3420]:
+                                          - /placeholder: ""
+                                          - text: "0.00"
+                                      - gridcell "0.00" [ref=e3421]:
+                                        - textbox "850 Price" [ref=e3428]:
+                                          - /placeholder: ""
+                                          - text: "0.00"
+                                      - gridcell [ref=e3429]:
+                                        - textbox "Configuration" [ref=e3436] [cursor=pointer]:
+                                          - /placeholder: ""
+                                      - gridcell [ref=e3437]:
+                                        - textbox "Size" [ref=e3444] [cursor=pointer]:
+                                          - /placeholder: ""
+                                      - gridcell [ref=e3445]:
+                                        - textbox "Color" [ref=e3452] [cursor=pointer]:
+                                          - /placeholder: ""
+                                      - gridcell [ref=e3453]:
+                                        - textbox "Style" [ref=e3460] [cursor=pointer]:
+                                          - /placeholder: ""
+                                      - gridcell [ref=e3461]:
+                                        - textbox "Version" [ref=e3468] [cursor=pointer]:
+                                          - /placeholder: ""
+                                      - gridcell "US" [ref=e3469]:
+                                        - textbox "Site" [ref=e3476] [cursor=pointer]:
+                                          - /placeholder: ""
+                                          - text: US
+                                      - gridcell "AUSTIN" [ref=e3477]:
+                                        - textbox "Warehouse" [ref=e3484] [cursor=pointer]:
+                                          - /placeholder: ""
+                                          - text: AUSTIN
+                                      - gridcell [ref=e3485]:
+                                        - textbox "Batch number" [ref=e3492] [cursor=pointer]:
+                                          - /placeholder: ""
+                                      - gridcell [ref=e3493]:
+                                        - textbox "Location" [ref=e3500] [cursor=pointer]:
+                                          - /placeholder: ""
+                                      - gridcell [ref=e3501]:
+                                        - textbox "Serial number" [ref=e3508] [cursor=pointer]:
+                                          - /placeholder: ""
+                                      - gridcell [ref=e3509]:
+                                        - textbox "Inventory status" [ref=e3516] [cursor=pointer]:
+                                          - /placeholder: ""
+                                      - gridcell [ref=e3517]:
+                                        - textbox "License plate" [ref=e3524] [cursor=pointer]:
+                                          - /placeholder: ""
+                                      - gridcell [ref=e3525]:
+                                        - textbox "Owner" [ref=e3532] [cursor=pointer]:
+                                          - /placeholder: ""
+                                      - gridcell [ref=e3533]:
+                                        - textbox "Unit price" [ref=e3540]:
+                                          - /placeholder: ""
+                                      - gridcell [ref=e3541]:
+                                        - textbox "Discount" [disabled] [ref=e3548]:
+                                          - /placeholder: ""
+                                      - gridcell [ref=e3549]:
+                                        - textbox "Net amount" [ref=e3556]:
+                                          - /placeholder: ""
+                                      - gridcell [ref=e3557]:
+                                        - textbox "Discount percent" [disabled] [ref=e3564]:
+                                          - /placeholder: ""
+                                      - gridcell "Do not recalculate" [ref=e3565]:
+                                        - checkbox "Do not recalculate" [ref=e3571]:
+                                          - generic "No" [ref=e3572]:
+                                            - img [ref=e3574]
+                                      - gridcell "Price locked" [ref=e3576]:
+                                        - checkbox "Price locked" [ref=e3582]:
+                                          - generic "No" [ref=e3583]:
+                                            - img [ref=e3585]
+                                      - gridcell "PREPAID" [ref=e3587]:
+                                        - generic [ref=e3593]:
+                                          - combobox "Delivery terms" [ref=e3594]: PREPAID
+                                          - button "Open" [ref=e3595] [cursor=pointer]:
+                                            - img [ref=e3596]
+                                      - gridcell "B2B" [ref=e3598]:
+                                        - generic [ref=e3604]:
+                                          - combobox "Carrier service" [ref=e3605]: B2B
+                                          - button "Open" [ref=e3606] [cursor=pointer]:
+                                            - img [ref=e3607]
+                                      - gridcell [ref=e3609]:
+                                        - textbox "Bundle line status" [ref=e3615] [cursor=pointer]
+                                      - gridcell [ref=e3616]:
+                                        - textbox "Shipping carrier" [ref=e3623]:
+                                          - /placeholder: ""
+                                      - gridcell [ref=e3624]:
+                                        - textbox "Shipment group" [ref=e3631]:
+                                          - /placeholder: ""
+                                      - gridcell [ref=e3632]:
+                                        - generic [ref=e3638]:
+                                          - combobox "Shipment id" [ref=e3639]
+                                          - button "Open" [ref=e3640] [cursor=pointer]:
+                                            - img [ref=e3641]
+                        - generic [ref=e3648]:
+                          - 'heading "Line details Delivery name: (blank) Manual discount percent: 0.00" [level=2] [ref=e3649]':
+                            - button "Line details" [expanded] [ref=e3650] [cursor=pointer]: Line details 
+                            - generic [ref=e3651]:
+                              - 'generic "Delivery name: (blank)" [ref=e3652]': "--"
+                              - 'generic "Manual discount percent: 0.00" [ref=e3653]': "0.00"
+                          - group "Line details" [ref=e3654]:
+                            - tablist [ref=e3655]:
+                              - tab "General" [selected] [ref=e3656] [cursor=pointer]
+                              - tab "Address" [ref=e3657] [cursor=pointer]
+                              - tab "Delivery" [ref=e3658] [cursor=pointer]
+                              - tab "Product" [ref=e3659] [cursor=pointer]
+                              - tab "Price and discount" [ref=e3660] [cursor=pointer]
+                              - tab "Cleo" [ref=e3661] [cursor=pointer]
+                            - text:  
+                            - tabpanel "General" [ref=e3662]:
+                              - generic [ref=e3663]:
+                                - group "Order line" [ref=e3665]:
+                                  - heading "Order line" [level=3] [ref=e3666]
+                                  - generic [ref=e3667]: Product name
+                                  - textbox "Product name" [ref=e3668]:
+                                    - /placeholder: ""
+                                  - generic [ref=e3669]: Text
+                                  - textbox "Text" [ref=e3670]:
+                                    - /placeholder: ""
+                                - group "External references" [ref=e3672]:
+                                  - heading "External references" [level=3] [ref=e3673]
+                                  - generic [ref=e3674]:
+                                    - generic [ref=e3675]: Customer Sku
+                                    - combobox "Customer Sku" [ref=e3676]
+                                    - generic [ref=e3677] [cursor=pointer]: 
+                                  - generic [ref=e3678]:
+                                    - generic [ref=e3679]: Line number
+                                    - textbox "Line number" [ref=e3680]:
+                                      - /placeholder: ""
+                                    - generic [ref=e3681]: FH Customer Line Number
+                                    - textbox "FH Customer Line Number" [ref=e3682]:
+                                      - /placeholder: ""
+                                - generic [ref=e3684]:
+                                  - group "Status" [ref=e3685]:
+                                    - heading "Status" [level=3] [ref=e3686]
+                                    - generic [ref=e3687]: Line status
+                                    - generic [ref=e3688]:
+                                      - combobox "Line status" [ref=e3689]: Open order
+                                      - text: 
+                                  - generic [ref=e3690]:
+                                    - generic [ref=e3691]: Fulfillment status
+                                    - generic [ref=e3692]:
+                                      - combobox "Fulfillment status" [ref=e3693]: Unknown
+                                      - text: 
+                                    - generic [ref=e3694]:
+                                      - generic [ref=e3695]: Koerber line status
+                                      - generic [ref=e3696]:
+                                        - combobox "Koerber line status" [ref=e3697]: Not released
+                                        - text: 
+                                - generic [ref=e3698]:
+                                  - generic [ref=e3699]: Shipment group
+                                  - textbox "Shipment group" [ref=e3700]:
+                                    - /placeholder: ""
+                                - generic [ref=e3701]:
+                                  - generic [ref=e3702]: Shipment id
+                                  - textbox "Shipment id" [ref=e3703]:
+                                    - /placeholder: ""
+                                  - text: 
+                - text:  
+            - text:  
+  - tooltip "(Alt+N)" [ref=e3704]:
+    - generic [ref=e3707]: New
+    - generic [ref=e3709]: (Alt+N)

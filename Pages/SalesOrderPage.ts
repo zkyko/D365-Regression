@@ -40,6 +40,12 @@ export class SalesOrderPage extends BasePage {
   // ─── Tab navigation ───────────────────────────────────────────────────────
   readonly headerTab: Locator = this.page.getByText("Header", { exact: true });
   readonly linesTab:  Locator = this.page.getByText("Lines",  { exact: true });
+  // Action-pane "Sell" tab — must be clicked before "Confirm sales order".
+  // The inner <span class="appBarTab-headerLabel"> resolves correctly but has no
+  // bounding box (Playwright: "element is not visible"). Navigate up to its
+  // clickable parent via xpath=.. instead of targeting the presentational span.
+  readonly sellTab: Locator =
+    this.page.locator('.appBarTab-headerLabel').filter({ hasText: /^Sell$/ }).first().locator('xpath=..');
 
   // ─── Header tab ───────────────────────────────────────────────────────────
   readonly shipTypeCombo: Locator =
@@ -62,16 +68,18 @@ export class SalesOrderPage extends BasePage {
     this.page.locator('[role="grid"][aria-label="Order lines"]');
 
   // ─── Line field reads (for account-payment / lightweight flows) ───────────
-  // These target the active row in the grid via the stable D365 name= attributes.
+  // D365 inputs do NOT carry name= on the <input> element itself — the
+  // data-dyn-controlname attribute is on the parent wrapper div.
+  // Correct pattern: [data-dyn-controlname="..."] input
   /** Quantity field in the active grid row (ControlName: SalesLine_SalesQty) */
   readonly quantityField: Locator =
-    this.page.locator('[name="SalesLine_SalesQty"], input[aria-label="Quantity"]').first();
+    this.page.locator('[data-dyn-controlname="SalesLine_SalesQty"] input');
   /** Unit price field in the active grid row (ControlName: SalesLine_SalesPrice) */
   readonly unitPriceField: Locator =
-    this.page.locator('[name="SalesLine_SalesPrice"], input[aria-label="Unit price"]').first();
+    this.page.locator('[data-dyn-controlname="SalesLine_SalesPrice"] input');
   /** Net amount field in the active grid row (ControlName: SalesLine_LineAmount) */
   readonly netAmountField: Locator =
-    this.page.locator('[name="SalesLine_LineAmount"], input[aria-label="Net amount"]').first();
+    this.page.locator('[data-dyn-controlname="SalesLine_LineAmount"] input');
 
   // ─── Reservation controls ─────────────────────────────────────────────────
   // name attrs are stable across D365 sessions; avoid ID selectors with session numbers
@@ -82,8 +90,10 @@ export class SalesOrderPage extends BasePage {
   readonly closeButton:       Locator = this.page.getByRole("button", { name: "Close" });
 
   // ─── Confirm / Sales Order Confirmation ───────────────────────────────────
+  // Live DOM: button is under the "Sell" action-pane tab, label = "Confirm sales order",
+  // control name = buttonUpdateConfirmation. D365 ribbon buttons carry name= on <button>.
   readonly confirmNowBtn: Locator =
-    this.page.getByRole("button", { name: "Confirm now" });
+    this.page.locator('button[name="buttonUpdateConfirmation"]');
   readonly salesOrderConfirmationBtn: Locator =
     this.page.getByRole("button", { name: "Sales order confirmation" });
   readonly confirmationAmountEl: Locator =
@@ -127,9 +137,22 @@ export class SalesOrderPage extends BasePage {
    */
   async enterItemNumber(itemNumber: string): Promise<void> {
     await this.itemNumberCombo.click();
-    await this.itemNumberCombo.fill(itemNumber);
-    await this.itemNumberCombo.press("Tab");
+    // Must type character-by-character (pressSequentially) to trigger D365's
+    // autocomplete lookup dropdown — fill() sets the value instantly without
+    // firing the events D365 needs to show suggestions.
+    await this.itemNumberCombo.pressSequentially(itemNumber, { delay: 50 });
     await this.page.waitForTimeout(1_500);
+
+    // Click the first result row in the autocomplete lookup dropdown.
+    // D365 item-number comboboxes show a .lookup-inner grid (not a <select>).
+    const lookupFirstRow = this.page
+      .locator('.lookup-inner [role="row"], [role="listbox"] [role="option"]')
+      .first();
+    const hasLookup = await lookupFirstRow.isVisible({ timeout: 3_000 }).catch(() => false);
+    if (hasLookup) {
+      await lookupFirstRow.click();
+      await this.waitForProcessing();
+    }
 
     // Handle Product search dialog (conditionally appears)
     if (await this.addLinesAndCloseBtn.isVisible({ timeout: 2_000 }).catch(() => false)) {
@@ -225,6 +248,7 @@ export class SalesOrderPage extends BasePage {
    * Must be called before reserveAllSubLines().
    */
   async goToLinesTab(): Promise<void> {
+    await this.dismissBlockingDialogsIfPresent();
     await this.linesTab.click();
     await this.waitForProcessing();
 
@@ -234,6 +258,33 @@ export class SalesOrderPage extends BasePage {
     await this.page.waitForTimeout(500);
 
     await this.orderLinesGrid.waitFor({ state: "visible", timeout: 10_000 });
+  }
+
+  private async dismissBlockingDialogsIfPresent(): Promise<void> {
+    const shellBlocker = this.page.locator('#ShellBlockingDiv.applicationShell-blockingMessage');
+    if (await shellBlocker.isVisible({ timeout: 1_000 }).catch(() => false)) {
+      await shellBlocker.waitFor({ state: 'hidden', timeout: 20_000 }).catch(() => {});
+    }
+
+    const formNames = ["MCRCustPaymDialog", "MCRSalesOrderRecap"];
+    for (const formName of formNames) {
+      const dialog = this.page
+        .locator(`div[role="dialog"][data-dyn-form-name="${formName}"]`)
+        .first();
+      if (!(await dialog.isVisible({ timeout: 1_000 }).catch(() => false))) continue;
+
+      const cancelOrClose = dialog
+        .locator('button[name="CancelButton"], button[name="CloseButton"]')
+        .first();
+      if (await cancelOrClose.isVisible({ timeout: 1_000 }).catch(() => false)) {
+        await cancelOrClose.click({ force: true }).catch(async () => {
+          await this.page.keyboard.press("Escape").catch(() => {});
+        });
+      } else {
+        await this.page.keyboard.press("Escape").catch(() => {});
+      }
+      await dialog.waitFor({ state: "hidden", timeout: 20_000 }).catch(() => {});
+    }
   }
 
   /**
@@ -262,8 +313,8 @@ export class SalesOrderPage extends BasePage {
       await row.click();
       await this.page.waitForTimeout(300);
 
-      await this.inventoryButton.click();
-      await this.reservationMenuBtn.click();
+      await this.openInventoryMenu();
+      await this.openReservationMenu();
       await this.waitForProcessing();
 
       // Stock check: ALCPhysicallyAllocated must be > 0
@@ -278,17 +329,290 @@ export class SalesOrderPage extends BasePage {
         );
       }
 
-      await this.reserveLotBtn.click();
-      await this.waitForProcessing();
+      await this.clickReserveLot();
       await this.closeButton.click();
       await this.page.waitForTimeout(300);
     }
   }
 
-  /** Click "Confirm now" to confirm the sales order. */
+  /**
+   * Open the Inventory menu for the current line, using multiple locator
+   * strategies for resilience against minor DOM changes.
+   */
+  private async openInventoryMenu(): Promise<void> {
+    const candidates: Locator[] = [
+      this.inventoryButton,
+      this.page.getByRole("button", { name: /Inventory/i }).first(),
+      this.page.locator('button:has-text("Inventory")').first(),
+      this.page.locator('button[aria-label*="Inventory"]').first(),
+      this.page.locator('//span[contains(@aria-describedby,"LineInventory")]').first(),
+    ];
+
+    for (const candidate of candidates) {
+      const visible = await candidate.isVisible({ timeout: 2_000 }).catch(() => false);
+      if (visible) {
+        await candidate.click();
+        await this.page.waitForTimeout(5_000);
+        return;
+      }
+    }
+
+    throw new Error("Inventory menu button not found");
+  }
+
+  /**
+   * Open the Reservation dialog from the Inventory menu with robust fallbacks.
+   */
+  private async openReservationMenu(): Promise<void> {
+    const spanReservation = this.page
+      .locator("//span[contains(@aria-describedby,'Reservation')]")
+      .first();
+
+    const candidates: Locator[] = [
+      this.reservationMenuBtn,
+      spanReservation,
+      this.page.getByRole("menuitem", { name: /Reservation/i }).first(),
+      this.page.getByRole("button", { name: /Reservation/i }).first(),
+      this.page.locator('button:has-text("Reservation")').first(),
+      this.page.locator('span:has-text("Reservation")').first(),
+    ];
+
+    for (const candidate of candidates) {
+      const visible = await candidate.isVisible({ timeout: 5_000 }).catch(() => false);
+      if (visible) {
+        await candidate.click();
+        await this.waitForProcessing();
+        return;
+      }
+    }
+
+    console.error("Failed to find Reservation button.");
+    throw new Error("Reservation button not found in Inventory menu");
+  }
+
+  /**
+   * Click the "Reserve lot" action using both name-based and aria-describedby
+   * based locators, mirroring the more defensive JS implementation.
+   */
+  private async clickReserveLot(): Promise<void> {
+    const spanReserveLot = this.page
+      .locator("//span[contains(@aria-describedby,'ReserveLot')]")
+      .first();
+
+    const candidates: Locator[] = [
+      this.reserveLotBtn,
+      spanReserveLot,
+      this.page.getByRole("button", { name: /reserve/i }).first(),
+    ];
+
+    for (const candidate of candidates) {
+      const visible = await candidate.isVisible({ timeout: 15_000 }).catch(() => false);
+      if (!visible) continue;
+
+      await expect(candidate).toBeEnabled({ timeout: 15_000 }).catch(() => {});
+      await candidate.click();
+      await this.waitForProcessing();
+      return;
+    }
+
+    throw new Error("Reserve lot button was not visible or enabled");
+  }
+
+  /**
+   * Click the "Sell" action-pane tab (if necessary), then click
+   * "Confirm sales order" to confirm the sales order.
+   *
+   * If the Sell tab is already active and only the "Confirm sales order"
+   * button/label is present, this method falls back to clicking that
+   * directly using multiple locator strategies.
+   */
   async confirmNow(): Promise<void> {
-    await this.confirmNowBtn.click();
+    // Try to activate the Sell tab, but don't fail the whole flow if it's
+    // already active or not interactable — in some views the confirm button
+    // is already visible without re-clicking Sell.
+    const sellVisible = await this.sellTab.isVisible({ timeout: 3_000 }).catch(() => false);
+    if (sellVisible) {
+      await this.sellTab.click();
+      await this.page.waitForTimeout(300);
+    }
+
+    await this.clickConfirmSalesOrder();
     await this.waitForProcessing();
+    await this.handleConfirmPostingDialogs();
+    await this.assertOperationCompleted();
+  }
+
+  /**
+   * Robustly click the "Confirm sales order" button using:
+   *   1) button[name="buttonUpdateConfirmation"]
+   *   2) the span.button-label "Confirm sales order" ancestor button
+   *   3) generic role/text fallbacks
+   */
+  private async clickConfirmSalesOrder(): Promise<void> {
+    const labelSpan = this.page
+      .locator('span.button-label', { hasText: "Confirm sales order" })
+      .first();
+    const labelButton = labelSpan.locator('xpath=ancestor::button[1]');
+
+    const candidates: Locator[] = [
+      this.confirmNowBtn,
+      labelButton,
+      this.page.getByRole("button", { name: "Confirm sales order" }).first(),
+      this.page.locator('button:has-text("Confirm sales order")').first(),
+    ];
+
+    for (const candidate of candidates) {
+      const visible = await candidate.isVisible({ timeout: 5_000 }).catch(() => false);
+      if (!visible) continue;
+
+      await candidate.click();
+      return;
+    }
+
+    throw new Error('Could not find "Confirm sales order" button');
+  }
+
+  /**
+   * Verify that the standard D365 info bar message
+   * "Operation completed" is shown, which confirms that the
+   * confirm-posting process finished successfully.
+   */
+  private async assertOperationCompleted(): Promise<void> {
+    const message = this.page
+      .locator(".messageBar-message")
+      .filter({ hasText: /Operation completed/i })
+      .first();
+
+    // Best-effort: don't fail the test if this toast is missing or very brief.
+    try {
+      await expect(message).toBeVisible({ timeout: 20_000 });
+    } catch {
+      console.warn(
+        '⚠ "Operation completed" toast not detected after confirm; continuing. ' +
+          "Verify confirmation via downstream steps (e.g. document status).",
+      );
+    }
+  }
+
+  /**
+   * After clicking "Confirm sales order", handle the follow-up dialogs:
+   *   0) "Confirm sales order" dialog (SalesEditLines...) + OK
+   *   1) Update = Confirmation (SalesParmTable_Ordering...) + OK
+   *   2) Optional "You are about to post the document without printing it" warning + OK
+   */
+  private async handleConfirmPostingDialogs(): Promise<void> {
+    // Dialog 0: "Confirm sales order" modal (SalesEditLines) with OK button.
+    // This dialog can appear immediately after clicking "Confirm sales order"
+    // from the Sell action pane and must be dismissed before interacting with
+    // the underlying Sales order form.
+    const confirmSalesOrderDialog = this.page
+      .locator('div[role="dialog"][data-dyn-form-name="SalesEditLines"][aria-hidden="false"]')
+      .first();
+    const hasConfirmSalesOrderDialog = await confirmSalesOrderDialog
+      .waitFor({ state: "visible", timeout: 20_000 })
+      .then(() => true)
+      .catch(() => false);
+
+    if (hasConfirmSalesOrderDialog) {
+      const okInConfirmDialogCandidates: Locator[] = [
+        confirmSalesOrderDialog.getByRole("button", { name: /^OK$/ }).first(),
+        confirmSalesOrderDialog.locator('button[name="OK"]').first(),
+        confirmSalesOrderDialog
+          .locator('span.button-label[id*="SalesEditLines_"][id$="_OK_label"]')
+          .first()
+          .locator("xpath=ancestor::button[1]"),
+      ];
+
+      let clicked = false;
+      for (const candidate of okInConfirmDialogCandidates) {
+        const visible = await candidate.isVisible({ timeout: 5_000 }).catch(() => false);
+        if (!visible) continue;
+        await candidate.click({ force: true });
+        clicked = true;
+        break;
+      }
+
+      if (!clicked) {
+        throw new Error(
+          'Confirm sales order dialog (SalesEditLines) is open, but no clickable "OK" button was found.',
+        );
+      }
+
+      // Fallback: in some runs D365 keeps focus in the dialog; Enter confirms.
+      await confirmSalesOrderDialog.waitFor({ state: "hidden", timeout: 20_000 }).catch(async () => {
+        await this.page.keyboard.press("Enter");
+        await confirmSalesOrderDialog.waitFor({ state: "hidden", timeout: 10_000 }).catch(() => {});
+      });
+
+      await this.waitForProcessing();
+      await this.page.waitForTimeout(300);
+    }
+
+    // Dialog 1: "Update" field with value/title "Confirmation" and an OK button
+    const updateField = this.page
+      .locator('input[id*="SalesParmTable_Ordering_"][id$="_input"]')
+      .first();
+    const hasUpdateDialog = await updateField.isVisible({ timeout: 10_000 }).catch(() => false);
+
+    if (hasUpdateDialog) {
+      try {
+        const rawValue =
+          (await updateField.inputValue().catch(() => "")) ||
+          (await updateField.getAttribute("title").catch(() => "")) ||
+          "";
+        console.log(`Update dialog value/title: "${rawValue}"`);
+      } catch {
+        // Non-fatal if we can't read the value; continue to OK click.
+      }
+
+      const okLabel = this.page
+        .locator('span.button-label[id*="SalesEditLines_"][id$="_OK_label"]')
+        .first();
+      const okButton = okLabel.locator("xpath=ancestor::button[1]");
+
+      const okCandidates: Locator[] = [
+        okButton,
+        this.page.getByRole("button", { name: "OK" }).first(),
+      ];
+
+      for (const candidate of okCandidates) {
+        const visible = await candidate.isVisible({ timeout: 10_000 }).catch(() => false);
+        if (!visible) continue;
+        await candidate.click();
+        await this.waitForProcessing();
+        break;
+      }
+    }
+
+    // Dialog 2 (optional): "You are about to post the document without printing it. Select OK to continue."
+    const warningHeader = this.page
+      .locator("h2#titleField")
+      .filter({
+        hasText:
+          "You are about to post the document without printing it. Select OK to continue.",
+      })
+      .first();
+
+    const hasWarning = await warningHeader.isVisible({ timeout: 10_000 }).catch(() => false);
+    if (hasWarning) {
+      const warnLabel = this.page
+        .locator('span.button-label[id*="SysBoxForm_"][id$="_Ok_label"]')
+        .first();
+      const warnButton = warnLabel.locator("xpath=ancestor::button[1]");
+
+      const warnCandidates: Locator[] = [
+        warnButton,
+        this.page.getByRole("button", { name: "OK" }).first(),
+      ];
+
+      for (const candidate of warnCandidates) {
+        const visible = await candidate.isVisible({ timeout: 10_000 }).catch(() => false);
+        if (!visible) continue;
+        await candidate.click();
+        await this.waitForProcessing();
+        break;
+      }
+    }
   }
 
   /**

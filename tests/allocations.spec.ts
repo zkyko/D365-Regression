@@ -2,7 +2,6 @@ import { test, expect } from '@playwright/test';
 import { readAllocationsData } from '../utils/excel-reader';
 import { SalesOrderListPage }      from '../Pages/SalesOrderListPage';
 import { SalesOrderPage }          from '../Pages/SalesOrderPage';
-import { MCROrderRecapPage }       from '../Pages/MCROrderRecapPage';
 import { AllocationWorkbenchPage } from '../Pages/AllocationWorkbenchPage';
 
 /**
@@ -32,7 +31,6 @@ test.describe('Scenario 95 — Incomplete hold strips reservations (P0)', () => 
     test(`Scenario 95 Row ${index + 1} — Incomplete hold [${data.CustomerAccount}]`, async ({ page }) => {
       const soListPage   = new SalesOrderListPage(page);
       const soPage       = new SalesOrderPage(page);
-      const mcrPage      = new MCROrderRecapPage(page);
       const allocPage    = new AllocationWorkbenchPage(page);
 
       await page.goto('/');
@@ -57,7 +55,7 @@ test.describe('Scenario 95 — Incomplete hold strips reservations (P0)', () => 
 
       // STEP 6: Put the SO on an INCOMPLETE order hold
       // TODO: applyOrderHold() must be called while SO form is open
-      // await allocPage.applyOrderHold('Incomplete');
+      await allocPage.applyOrderHold(data.HoldType || 'Incomplete');
 
       // VERIFICATION 1: Reservations must be stripped
       // TODO: Navigate back to Lines tab and check ALCPhysicallyAllocated = 0
@@ -66,10 +64,9 @@ test.describe('Scenario 95 — Incomplete hold strips reservations (P0)', () => 
 
       // VERIFICATION 2: Shipment cannot be created
       // TODO: Navigate to CFS or Shipment Builder and verify SO is blocked
-      // await allocPage.verifyShipmentCannotBeCreated(salesOrderNumber);
+      await allocPage.verifyShipmentCannotBeCreated(salesOrderNumber);
 
       console.log(`✓ Scenario 95 Row ${index + 1}: Incomplete hold test set up. SO: ${salesOrderNumber}`);
-      console.warn('⚠ Scenario 95 — INCOMPLETE: applyOrderHold() locators not yet confirmed. See Pages/AllocationWorkbenchPage.ts');
     });
   }
 });
@@ -82,7 +79,6 @@ test.describe('Scenario 96 — Soft hold keeps reservations blocks shipment (P0)
     test(`Scenario 96 Row ${index + 1} — Soft hold [${data.CustomerAccount}]`, async ({ page }) => {
       const soListPage   = new SalesOrderListPage(page);
       const soPage       = new SalesOrderPage(page);
-      const mcrPage      = new MCROrderRecapPage(page);
       const allocPage    = new AllocationWorkbenchPage(page);
 
       await page.goto('/');
@@ -104,17 +100,16 @@ test.describe('Scenario 96 — Soft hold keeps reservations blocks shipment (P0)
       await soPage.confirmNow();
 
       // STEP: Put SO on SOFT hold (different from Scenario 95's incomplete hold)
-      // TODO: await allocPage.applyOrderHold('Soft');
+      await allocPage.applyOrderHold(data.HoldType || 'Soft');
 
       // VERIFICATION 1: Reservations should STILL be intact (soft hold doesn't strip)
       // await soPage.goToLinesTab();
       // await allocPage.verifyReservationsIntact();
 
       // VERIFICATION 2: Shipment still cannot be created (hold blocks SB)
-      // await allocPage.verifyShipmentCannotBeCreated(salesOrderNumber);
+      await allocPage.verifyShipmentCannotBeCreated(salesOrderNumber);
 
       console.log(`✓ Scenario 96 Row ${index + 1}: Soft hold test set up. SO: ${salesOrderNumber}`);
-      console.warn('⚠ Scenario 96 — INCOMPLETE: applyOrderHold() locators not yet confirmed.');
     });
   }
 });
@@ -193,7 +188,6 @@ test.describe('Scenario 113 — Unreserve via allocate lot on SO (P0)', () => {
     test(`Scenario 113 Row ${index + 1} — Allocate lot unreserve [${data.CustomerAccount}]`, async ({ page }) => {
       const soListPage = new SalesOrderListPage(page);
       const soPage     = new SalesOrderPage(page);
-      const mcrPage    = new MCROrderRecapPage(page);
 
       await page.goto('/');
 

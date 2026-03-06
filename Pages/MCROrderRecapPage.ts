@@ -73,11 +73,23 @@ export class MCROrderRecapPage extends BasePage {
    *   → OK (tokenization) → OK (amount confirmation)
    */
   async addCreditCard(cc: CreditCardData): Promise<void> {
-    await this.addPaymentBtn.waitFor({ state: "visible", timeout: 10_000 });
-    await this.addPaymentBtn.click();
-    await this.page.waitForLoadState("networkidle");
+    const paymentDialog = this.page
+      .locator('div[role="dialog"][data-dyn-form-name="MCRCustPaymDialog"]')
+      .first();
+    const paymentDialogOpen = await paymentDialog.isVisible({ timeout: 1_500 }).catch(() => false);
 
-    await this.addCreditCardBtn.click();
+    // If the payment dialog is already open (e.g., saved-card lookup path), don't
+    // click Add again on the recap form behind the modal.
+    if (!paymentDialogOpen) {
+      await this.addPaymentBtn.waitFor({ state: "visible", timeout: 10_000 });
+      const opened = await this.openPaymentDialog(paymentDialog);
+      if (!opened) {
+        throw new Error("Payment dialog did not open from MCR recap Add button.");
+      }
+    }
+
+    const addCardBtn = paymentDialog.getByRole("button", { name: "Add credit card" }).first();
+    await this.clickWhenUnblocked(addCardBtn);
     await this.page.waitForLoadState("networkidle");
 
     // ── Nested-iframe tokenization form ─────────────────────────────────────
@@ -98,11 +110,11 @@ export class MCROrderRecapPage extends BasePage {
     // ────────────────────────────────────────────────────────────────────────
 
     // OK on the tokenization dialog
-    await this.okBtn.click();
+    await this.clickWhenUnblocked(this.okBtn);
     await this.page.waitForLoadState("networkidle");
 
     // OK on the payment amount dialog
-    await this.okButtonBtn.click();
+    await this.clickWhenUnblocked(this.okButtonBtn);
     await this.page.waitForLoadState("networkidle");
   }
 
@@ -113,8 +125,61 @@ export class MCROrderRecapPage extends BasePage {
    *                   Passing it in avoids re-locating it from a different context.
    */
   async submit(submitBtn: Locator): Promise<void> {
-    await submitBtn.click();
+    let lastError: unknown;
+    for (let attempt = 1; attempt <= 8; attempt++) {
+      const shellBlocker = this.page.locator('#ShellBlockingDiv.applicationShell-blockingMessage');
+      if (await shellBlocker.isVisible({ timeout: 1_500 }).catch(() => false)) {
+        await shellBlocker.waitFor({ state: 'hidden', timeout: 30_000 }).catch(() => {});
+      }
+
+      try {
+        await submitBtn.click({ timeout: 8_000 });
+        lastError = undefined;
+        break;
+      } catch (error) {
+        lastError = error;
+        await this.page.waitForTimeout(400 * attempt);
+      }
+    }
+    if (lastError) throw lastError;
+
     await this.page.waitForLoadState("networkidle");
     await this.page.waitForTimeout(2_000);
+  }
+
+  private async openPaymentDialog(paymentDialog: Locator): Promise<boolean> {
+    for (let attempt = 1; attempt <= 6; attempt++) {
+      if (await paymentDialog.isVisible({ timeout: 800 }).catch(() => false)) {
+        return true;
+      }
+
+      const shellBlocker = this.page.locator('#ShellBlockingDiv.applicationShell-blockingMessage');
+      if (await shellBlocker.isVisible({ timeout: 1_000 }).catch(() => false)) {
+        await shellBlocker.waitFor({ state: 'hidden', timeout: 20_000 }).catch(() => {});
+      }
+
+      await this.addPaymentBtn.click({ timeout: 4_000 }).catch(() => {});
+      await this.page.waitForTimeout(300 * attempt);
+    }
+    return paymentDialog.isVisible({ timeout: 1_000 }).catch(() => false);
+  }
+
+  private async clickWhenUnblocked(locator: Locator): Promise<void> {
+    let lastError: unknown;
+    for (let attempt = 1; attempt <= 8; attempt++) {
+      const shellBlocker = this.page.locator('#ShellBlockingDiv.applicationShell-blockingMessage');
+      if (await shellBlocker.isVisible({ timeout: 1_500 }).catch(() => false)) {
+        await shellBlocker.waitFor({ state: 'hidden', timeout: 30_000 }).catch(() => {});
+      }
+
+      try {
+        await locator.click({ timeout: 8_000 });
+        return;
+      } catch (error) {
+        lastError = error;
+        await this.page.waitForTimeout(300 * attempt);
+      }
+    }
+    throw lastError;
   }
 }

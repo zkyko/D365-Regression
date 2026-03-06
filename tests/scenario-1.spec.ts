@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { readScenarioData } from '../utils/excel-reader';
+import { SalesOrderPage } from '../Pages/SalesOrderPage';
 
 /**
  * Scenario 1: Create a website sales order for credit card customer and autoship
@@ -268,9 +269,11 @@ for (const [index, data] of testData.entries()) {
 
       // ═════════════════════════════════════════════════════════════════════════
       // STEPS 43-47: Confirm now → Header → Sales order confirmation
+      // Use shared page object logic so we benefit from robust "Sell" + "Confirm
+      // sales order" locators (including the span.button-label fallback).
       // ═════════════════════════════════════════════════════════════════════════
-      await page.getByRole('button', { name: 'Confirm now' }).click();
-      await page.waitForLoadState('networkidle');
+      const soPage = new SalesOrderPage(page);
+      await soPage.confirmNow();
 
       await page.getByText('Header', { exact: true }).click();
       await page.waitForTimeout(500);

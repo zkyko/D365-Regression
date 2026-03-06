@@ -1,0 +1,40 @@
+userName: nbhandari_KMkNq9
+accessKey: 1tnaMGT6bqxfiTNX9zd7
+
+projectName: D365 Regression
+buildName: D365 Regression Build
+
+framework: playwright
+
+# Map to your Playwright projects on BrowserStack
+platforms:
+  - os: Windows
+    osVersion: 11
+    browserName: chrome
+    browserVersion: latest
+    playwrightConfigOptions:
+      name: chromium
+  - os: Windows
+    osVersion: 11
+    browserName: firefox
+    browserVersion: latest
+    playwrightConfigOptions:
+      name: firefox
+  - os: Windows
+    osVersion: 11
+    browserName: playwright-webkit
+    browserVersion: latest
+    playwrightConfigOptions:
+      name: webkit
+
+# Number of parallel sessions; tune based on your BrowserStack plan
+parallels: 3
+
+# Set to true if you need to test internal/staging URLs via BrowserStack Local
+browserstackLocal: false
+
+# Optional: tweak defaults for debugging
+debug: true
+networkLogs: true
+video: true
+

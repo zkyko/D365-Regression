@@ -447,6 +447,80 @@ export function readInventoryFeedData(fileName: string): InventoryFeedData[] {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Shipment Builder — BRD #14779 Amount Threshold (Scenarios BRD-3.1 … BRD-3.3e)
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Shape of one row in ShipmentBuilderThreshold.xlsx (sheet "ThresholdScenarios").
+ *
+ * Column headers in the Excel sheet must match these property names exactly.
+ *
+ * BRD #14779 §3 — Amount Threshold Testing Scenarios.
+ */
+export interface ShipmentBuilderThresholdData {
+  /** e.g. "BRD-3.1", "BRD-3.3a" */
+  TestCaseId                    : string;
+  /** Human-readable scenario description */
+  Description                   : string;
+  /** D365 customer account number */
+  CustomerAccount               : string;
+  /** Item number for the SO line */
+  ItemNumber                    : string;
+  /** SO line quantity */
+  Quantity                      : string;
+  /** e.g. "Prepaid", "ThirdParty", "Net30" */
+  DeliveryTerms                 : string;
+  /** e.g. "B2B", "Expedited" — must match the D365 carrier service code */
+  CarrierService                : string;
+  /** "Yes" or "No" — expected value of ExceedsAmountThreshold column after Grouping */
+  ExpectedExceedsThreshold      : string;
+  /**
+   * "Manual" or "Auto-Ship" — expected Classification Group after Grouping.
+   * Blank for scenarios that do not test this column (BRD-3.1 through BRD-3.3d).
+   */
+  ExpectedClassificationGroup   : string;
+}
+
+/**
+ * Read all data rows from `test-data/<fileName>`, sheet "ThresholdScenarios".
+ * Numeric cells are coerced to strings so fill() calls always receive a string.
+ */
+export function readShipmentBuilderThresholdData(
+  fileName: string,
+): ShipmentBuilderThresholdData[] {
+  const filePath = path.join(__dirname, '..', 'test-data', fileName);
+  const workbook = XLSX.readFile(filePath);
+  const sheet    = workbook.Sheets['ThresholdScenarios'];
+
+  if (!sheet) {
+    throw new Error(
+      `Sheet "ThresholdScenarios" not found in ${filePath}. ` +
+      `Available sheets: ${workbook.SheetNames.join(', ')}`,
+    );
+  }
+
+  const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet, {
+    raw: false,
+    defval: '',
+  });
+
+  return rows.map((row) => {
+    const str = (key: string): string => String(row[key] ?? '').trim();
+    return {
+      TestCaseId                  : str('TestCaseId'),
+      Description                 : str('Description'),
+      CustomerAccount             : str('CustomerAccount'),
+      ItemNumber                  : str('ItemNumber'),
+      Quantity                    : str('Quantity'),
+      DeliveryTerms               : str('DeliveryTerms'),
+      CarrierService              : str('CarrierService'),
+      ExpectedExceedsThreshold    : str('ExpectedExceedsThreshold'),
+      ExpectedClassificationGroup : str('ExpectedClassificationGroup'),
+    };
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Scenario 1
 // ─────────────────────────────────────────────────────────────────────────────
 

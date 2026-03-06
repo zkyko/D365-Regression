@@ -42,8 +42,8 @@ export class PaymentMethodPage {
   constructor(page: Page) {
     this.page = page;
 
-    this.paymentMethodInput     = page.locator('[name="Identification_TenderTypeId"], input[aria-label="Payment method"]').first();
-    this.percentAmountField     = page.locator('[aria-label="Percent amount"], [name="PercentAmount"]').first();
+    this.paymentMethodInput     = page.locator('[data-dyn-controlname="Identification_TenderTypeId"] input, input[aria-label="Payment method"]').first();
+    this.percentAmountField     = page.locator('[data-dyn-controlname="Identification_PercentAmount"] input, input[aria-label="Percent amount"]').first();
 
     // Enriched: button[name="OKButton"] first (matches MCROrderRecapPage.ts confirmed locator)
     this.okButton               = page.locator(

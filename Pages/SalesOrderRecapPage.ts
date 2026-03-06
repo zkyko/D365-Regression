@@ -44,8 +44,8 @@ export class SalesOrderRecapPage {
   constructor(page: Page) {
     this.page = page;
 
-    this.salesOrderField = page.locator('[name="SalesTable_SalesId"], input[aria-label="Sales order"]').first();
-    this.salesTotalField = page.locator('[name="SalesTotal"], input[aria-label="Sales total"]').first();
+    this.salesOrderField = page.locator('[data-dyn-controlname="SalesTable_SalesId"] input, input[aria-label="Sales order"]').first();
+    this.salesTotalField = page.locator('[data-dyn-controlname="SalesTotal"] input, input[aria-label="Sales total"]').first();
 
     // Enriched: button tag prefix + [name="AddBtn"] first (matches MCROrderRecapPage.ts)
     this.addButton       = page.locator(
