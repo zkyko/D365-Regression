@@ -198,6 +198,9 @@ export interface DChannelData {
   CustomerAccount        : string;
   CustomerPO             : string;
   ItemNumber             : string;
+  SalesQty               : string;  // quantity to order (default 25)
+  ShippingDateRequested  : string;  // requested ship date
+  TenderType             : string;  // deposit tender type code (e.g. "3")
   VendorAccount          : string;  // primary vendor account
   VendorAccount2         : string;  // second vendor (Scenario 65 — 2 vendors)
   NewItemNumber          : string;  // item added after PO (Scenarios 69/70)
@@ -229,10 +232,13 @@ export function readDChannelData(fileName: string): DChannelData[] {
   return rows.map((row) => {
     const str = (key: string): string => String(row[key] ?? '').trim();
     return {
-      ScenarioID           : str('ScenarioID'),
-      CustomerAccount      : str('CustomerAccount'),
-      CustomerPO           : str('CustomerPO'),
-      ItemNumber           : str('ItemNumber'),
+      ScenarioID              : str('ScenarioID'),
+      CustomerAccount         : str('CustomerAccount'),
+      CustomerPO              : str('CustomerPO'),
+      ItemNumber              : str('ItemNumber'),
+      SalesQty                : str('SalesQty'),
+      ShippingDateRequested   : str('ShippingDateRequested'),
+      TenderType              : str('TenderType'),
       VendorAccount        : str('VendorAccount'),
       VendorAccount2       : str('VendorAccount2'),
       NewItemNumber        : str('NewItemNumber'),
@@ -567,6 +573,86 @@ export function readScenarioData(fileName: string): Scenario1Data[] {
       CC_Zip                 : str('CC_Zip'),
       CC_Address             : str('CC_Address'),
       ExpectedShipType       : str('ExpectedShipType'),
+      ExpectedKoerberStatus  : str('ExpectedKoerberStatus'),
+      ExpectedDocumentStatus : str('ExpectedDocumentStatus'),
+    };
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Order Entry — Scenarios 3–9
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Shape of one row in Scenarios-3-9.xlsx (sheet "Scenarios3-9").
+ *
+ * - PaymentMethod = "CC"      → credit card via iframe (same as Scenario 1)
+ * - PaymentMethod = "Account" → on-account tender (TenderType field supplies the code)
+ * - ItemNumber2 / Quantity2   → populated for multi-item scenarios (7, 8)
+ * - IsBundle = "Yes"          → order contains a bundle item (106045-201 style)
+ */
+export interface Scenario39Data {
+  ScenarioID             : string;   // "3" … "9"
+  CustomerAccount        : string;   // account number OR customer name
+  CustomerPO             : string;
+  ItemNumber             : string;   // primary item number
+  Quantity               : string;   // qty for primary item (default "1")
+  ItemNumber2            : string;   // second item (scenarios 7 & 8 only)
+  Quantity2              : string;   // qty for second item
+  IsBundle               : string;   // "Yes" / "No"
+  PaymentMethod          : string;   // "CC" / "Account"
+  TenderType             : string;   // e.g. "AR" for on-account
+  ShipType               : string;   // e.g. "Auto Ship"
+  CC_Name                : string;
+  CC_Number              : string;
+  CC_CVV                 : string;
+  CC_ExpMonth            : string;
+  CC_ExpYear             : string;
+  CC_Zip                 : string;
+  CC_Address             : string;
+  ExpectedKoerberStatus  : string;   // e.g. "Released"
+  ExpectedDocumentStatus : string;   // e.g. "Invoice"
+}
+
+/** Read all data rows from `test-data/<fileName>`, sheet "Scenarios3-9". */
+export function readScenarios39Data(fileName: string): Scenario39Data[] {
+  const filePath = path.join(__dirname, '..', 'test-data', fileName);
+  const workbook = XLSX.readFile(filePath);
+  const sheet    = workbook.Sheets['Scenarios3-9'];
+
+  if (!sheet) {
+    throw new Error(
+      `Sheet "Scenarios3-9" not found in ${filePath}. ` +
+      `Available sheets: ${workbook.SheetNames.join(', ')}`,
+    );
+  }
+
+  const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet, {
+    raw: false,
+    defval: '',
+  });
+
+  return rows.map((row) => {
+    const str = (key: string): string => String(row[key] ?? '').trim();
+    return {
+      ScenarioID             : str('ScenarioID'),
+      CustomerAccount        : str('CustomerAccount'),
+      CustomerPO             : str('CustomerPO'),
+      ItemNumber             : str('ItemNumber'),
+      Quantity               : str('Quantity'),
+      ItemNumber2            : str('ItemNumber2'),
+      Quantity2              : str('Quantity2'),
+      IsBundle               : str('IsBundle'),
+      PaymentMethod          : str('PaymentMethod'),
+      TenderType             : str('TenderType'),
+      ShipType               : str('ShipType'),
+      CC_Name                : str('CC_Name'),
+      CC_Number              : str('CC_Number'),
+      CC_CVV                 : str('CC_CVV'),
+      CC_ExpMonth            : str('CC_ExpMonth'),
+      CC_ExpYear             : str('CC_ExpYear'),
+      CC_Zip                 : str('CC_Zip'),
+      CC_Address             : str('CC_Address'),
       ExpectedKoerberStatus  : str('ExpectedKoerberStatus'),
       ExpectedDocumentStatus : str('ExpectedDocumentStatus'),
     };

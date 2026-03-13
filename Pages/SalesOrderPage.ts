@@ -41,11 +41,12 @@ export class SalesOrderPage extends BasePage {
   readonly headerTab: Locator = this.page.getByText("Header", { exact: true });
   readonly linesTab:  Locator = this.page.getByText("Lines",  { exact: true });
   // Action-pane "Sell" tab — must be clicked before "Confirm sales order".
-  // The inner <span class="appBarTab-headerLabel"> resolves correctly but has no
-  // bounding box (Playwright: "element is not visible"). Navigate up to its
-  // clickable parent via xpath=.. instead of targeting the presentational span.
+  // D365 keeps both the list-page and the detail-form action panes in the DOM
+  // simultaneously; only the detail-form pane is visible. Target the Sell tab
+  // button that is currently visible (id ends with "_Sell_button", only one
+  // will have a non-zero bounding box at any given time).
   readonly sellTab: Locator =
-    this.page.locator('.appBarTab-headerLabel').filter({ hasText: /^Sell$/ }).first().locator('xpath=..');
+    this.page.locator('button[id$="_Sell_button"]:visible').first();
 
   // ─── Header tab ───────────────────────────────────────────────────────────
   readonly shipTypeCombo: Locator =
@@ -133,9 +134,14 @@ export class SalesOrderPage extends BasePage {
    * this method verifies the first row's item number matches `itemNumber`
    * and clicks "Add lines and close" to accept it.
    *
+   * Optionally set `quantity` (e.g. "5") to update the qty field before saving.
+   * For bundle items the quantity is set on the active row before save; this
+   * works when the bundle has not yet exploded. If the bundle already exploded
+   * the field update is best-effort (no error is thrown if the field is gone).
+   *
    * Saves the SO afterwards.
    */
-  async enterItemNumber(itemNumber: string): Promise<void> {
+  async enterItemNumber(itemNumber: string, quantity?: string): Promise<void> {
     await this.itemNumberCombo.click();
     // Must type character-by-character (pressSequentially) to trigger D365's
     // autocomplete lookup dropdown — fill() sets the value instantly without
@@ -178,6 +184,17 @@ export class SalesOrderPage extends BasePage {
       await this.page.waitForTimeout(1_500); // wait for bundle sub-lines to expand
     }
 
+    // Set quantity before saving (best-effort; may not apply to already-exploded bundles)
+    if (quantity && parseInt(quantity, 10) > 1) {
+      const qtyVisible = await this.quantityField.isVisible({ timeout: 3_000 }).catch(() => false);
+      if (qtyVisible) {
+        await this.quantityField.click();
+        await this.quantityField.fill(quantity);
+        await this.quantityField.press("Tab");
+        await this.page.waitForTimeout(300);
+      }
+    }
+
     await this.saveButton.click();
     await this.waitForProcessing();
   }
@@ -208,7 +225,7 @@ export class SalesOrderPage extends BasePage {
    * Switch to the Header tab and set the Ship type field.
    */
   async setShipType(shipType: string): Promise<void> {
-    await this.headerTab.click();
+    await this.clickWhenUnblocked(this.headerTab);
     await this.page.waitForTimeout(500);
     await this.shipTypeCombo.fill(shipType);
     await this.shipTypeCombo.press("Tab");
@@ -433,7 +450,11 @@ export class SalesOrderPage extends BasePage {
     const sellVisible = await this.sellTab.isVisible({ timeout: 3_000 }).catch(() => false);
     if (sellVisible) {
       await this.sellTab.click();
-      await this.page.waitForTimeout(300);
+      // Wait for the Sell-tab buttons to load into DOM (Confirm sales order)
+      await this.page
+        .locator('button[name="buttonUpdateConfirmation"]:visible')
+        .waitFor({ state: 'visible', timeout: 8_000 })
+        .catch(() => {});
     }
 
     await this.clickConfirmSalesOrder();

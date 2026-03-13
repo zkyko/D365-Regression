@@ -23,6 +23,9 @@ D365-Regression/
 │   ├── GroupingPage.ts           ✅ DONE — navigate + run
 │   ├── ShipmentBuilderPage.ts    ✅ DONE — navigate, GRP row, createShipment, verifyKoerber
 │   ├── ShipmentsPage.ts          ✅ DONE — navigate, pickAndPack, postPackingSlip, invoice
+│   ├── NavigationPage.ts         ✅ DONE — expandNav, navigateToModule, navigateViaMenu
+│   ├── VoyagePage.ts             ✅ DONE — VoyageListPage, VoyageEditorPage, VoyageCreateDialog
+│   ├── PurchaseOrderPage.ts      ✅ EXTENDED — PO create/confirm + W-channel + D-channel flows
 │   ├── PricingPage.ts            🟡 STUB — price override, reason code, coupon
 │   ├── DChannelOrderPage.ts      🟡 STUB — D Channel SO creation, PO link, deposits
 │   ├── ReturnOrderPage.ts        🟡 STUB — RMA, credit memo, replacement, inspection notes
@@ -33,9 +36,22 @@ D365-Regression/
 ├── tests/
 │   ├── scenario-1.spec.ts        ✅ DONE — W-channel SO, new CC, pick/ship/invoice
 │   ├── scenario-2.spec.ts        🟡 4 TODOs — website SO, existing CC, LTO item
+│   ├── scenarios-3-9.spec.ts     ✅ DONE — order entry variants (WEB/MANUAL/API/EDI/UPLOAD)
 │   ├── pricing.spec.ts           🟡 STUB — Scenarios 11, 55, 98–108
 │   ├── shipment-builder.spec.ts  🟡 STUB — Scenarios 21, 30, 35–46, 89–91, 117
-│   ├── d-channel.spec.ts         🟡 STUB — Scenarios 58–75, 120–123
+│   ├── batch-jobs.spec.ts        ✅ DONE — CFS + Grouping batch jobs (infra, supports all Sc.)
+│   │                               [Converted from TC-7938 + TC-7940 JS smoke tests]
+│   ├── d-channel.spec.ts         🟡 STUB — Scenarios 58–75, 120–123 (blocked: unconfirmed locators)
+│   ├── purchase-order.spec.ts    ✅ DONE — PO delivery remainder + confirm + W/D channel PO
+│   │   ├── Purchase Order | Create PO — Delivery Remainder Cancellation
+│   │   ├── Purchase Order | Confirm Existing PO
+│   │   ├── D Channel | Scenario 64 — Create W Channel Direct Delivery Order  [← TC-7848]
+│   │   └── D Channel | Scenario 58 — Create D Channel Manual Purchase Order  [← TC-7849]
+│   ├── cancel-sales-order.spec.ts ✅ DONE — D Channel | Scenario 73 (cancel SO, verify status)
+│   │                               [Converted from TC-7941 JS smoke test; D-channel-specific
+│   │                                allocation/PO-cancel checks to be added to d-channel.spec.ts]
+│   ├── landed-cost.spec.ts       ✅ DONE — Landed Cost | Create Standard Voyage
+│   │                               [Converted from TC-4409 JS smoke test; new coverage area]
 │   ├── returns-credits.spec.ts   🟡 STUB — Scenarios 76–88, 97
 │   ├── retail.spec.ts            🟡 STUB — Scenarios 92–94
 │   ├── allocations.spec.ts       🟡 STUB — Scenarios 95–96, 110–114
@@ -55,7 +71,8 @@ D365-Regression/
     ├── Retail.xlsx               ❌ NEEDS CREATING — sheet "Retail"
     ├── Allocations.xlsx          ❌ NEEDS CREATING — sheet "Allocations"
     ├── CustomerMaster.xlsx       ❌ NEEDS CREATING — sheet "CustomerMaster"
-    └── InventoryFeed.xlsx        ❌ NEEDS CREATING — sheet "InventoryFeed"
+    ├── InventoryFeed.xlsx        ❌ NEEDS CREATING — sheet "InventoryFeed"
+    └── LandedCost.xlsx           ❌ NEEDS CREATING — sheet "LandedCost" (for voyage scaling)
 ```
 
 ---
@@ -66,6 +83,7 @@ D365-Regression/
 |---|---|---|---|---|---|
 | 1 | P0 | Order Entry | scenario-1.spec.ts | SalesOrderListPage, SalesOrderPage, MCROrderRecapPage, CandidateForShippingPage, GroupingPage, ShipmentBuilderPage, ShipmentsPage | ✅ Done |
 | 2 | P0 | Order Entry | scenario-2.spec.ts | Same as above | 🟡 4 TODOs |
+| 3–9 | P0 | Order Entry | scenarios-3-9.spec.ts | SalesOrderListPage, SalesOrderPage, MCROrderRecapPage, CandidateForShippingPage, GroupingPage, ShipmentBuilderPage | ✅ Done |
 | 11 | P0 | Pricing | pricing.spec.ts | SalesOrderListPage, SalesOrderPage, MCROrderRecapPage, PricingPage | 🟡 Stub |
 | 21 | P0 | Shipment Builder | shipment-builder.spec.ts | SalesOrderListPage, SalesOrderPage, MCROrderRecapPage, ShipmentBuilderPage | 🟡 Stub |
 | 30 | P0 | Shipment Builder | shipment-builder.spec.ts | ShipmentsPage | ⚠️ External (WMS) |
@@ -73,7 +91,10 @@ D365-Regression/
 | 38–46 | P0 | Shipment Builder | shipment-builder.spec.ts | ShipmentBuilderPage, ShipmentsPage | 🟡 Stub |
 | 55 | P0 | Pricing | pricing.spec.ts | SalesOrderListPage, SalesOrderPage, PricingPage | 🟡 Stub |
 | 56–57 | P1 | Customer Master | customer-master.spec.ts | CustomerMasterPage | 🟡 Stub |
-| 58–75 | P0 | D Channel | d-channel.spec.ts | DChannelOrderPage | 🟡 Stub |
+| 58 (PO side) | P0 | D Channel | purchase-order.spec.ts | PurchaseOrderPage | ✅ Done (TC-7849 → D Channel \| Sc. 58 PO creation) |
+| 58–75 | P0 | D Channel | d-channel.spec.ts | DChannelOrderPage | 🟡 Stub (blocked: locators unconfirmed) |
+| 64 (PO side) | P0 | D Channel | purchase-order.spec.ts | PurchaseOrderPage | ✅ Done (TC-7848 → D Channel \| Sc. 64 W-channel PO) |
+| 73 (cancel path) | P0 | D Channel | cancel-sales-order.spec.ts | SalesOrderListPage, SalesOrderPage | ✅ Done (TC-7941 → D Channel \| Sc. 73 cancel + status) |
 | 76–88 | P0 | Returns & Credits | returns-credits.spec.ts | ReturnOrderPage, ShipmentBuilderPage, ShipmentsPage | 🟡 Stub |
 | 89–91 | P1 | Shipment Builder | shipment-builder.spec.ts | SalesOrderListPage, SalesOrderPage, ShipmentBuilderPage | 🟡 Stub |
 | 92–94 | P0 | Retail | retail.spec.ts | SalesOrderListPage, SalesOrderPage, ShipmentsPage | 🟡 Stub |
@@ -84,7 +105,58 @@ D365-Regression/
 | 110–114 | P0 | Allocations | allocations.spec.ts | AllocationWorkbenchPage, SalesOrderPage | 🟡 Stub |
 | 115–116, 118–119 | P0 | Inventory Feed | inventory-feed.spec.ts | InventoryFeedPage | 🟡 Stub / ⚠️ External |
 | 117 | P0 | Shipment Builder | shipment-builder.spec.ts | ShipmentBuilderPage | 🟡 Stub |
-| 120–123 | P0 | D Channel | d-channel.spec.ts | DChannelOrderPage | 🟡 Stub |
+| 120–123 | P0 | D Channel | d-channel.spec.ts | DChannelOrderPage | 🟡 Stub (blocked) |
+| — (infra) | P0 | Batch Jobs | batch-jobs.spec.ts | CandidateForShippingPage, GroupingPage | ✅ Done (TC-7938 + TC-7940, supports all E2E flows) |
+| — (new area) | P0 | Landed Cost | landed-cost.spec.ts | VoyagePage (VoyageListPage, VoyageEditorPage, VoyageCreateDialog) | ✅ Done (TC-4409 voyage creation) |
+
+---
+
+## JS Smoke Test Pack → TypeScript Regression Conversion
+
+The following JavaScript smoke test files were converted to TypeScript and
+integrated into the regression pack under the O2C scenario naming convention.
+The original `.spec.js` files are retained in `tests/` for reference only;
+they should NOT be included in the `npx playwright test` run (exclude via
+`playwright.config.ts` `testIgnore` pattern or delete once TS versions are stable).
+
+| Original JS File | Converted To | O2C Mapping | Test Title |
+|---|---|---|---|
+| TC-4409-create-standard-voyage.spec.js | tests/landed-cost.spec.ts | New area (Landed Cost) | Landed Cost \| Create Standard Voyage |
+| TC-7848-create-po-wchannel.spec.js | tests/purchase-order.spec.ts (Flow C) | D Channel \| Scenario 64 | D Channel \| Scenario 64 — Create W Channel Direct Delivery Order |
+| TC-7849-create-po-dchannel.spec (1).js | tests/purchase-order.spec.ts (Flow D) | D Channel \| Scenario 58 | D Channel \| Scenario 58 — Create D Channel Manual Purchase Order |
+| TC-7938-run-candidate-for-shipping-batch-job.spec.js | tests/batch-jobs.spec.ts | Batch infra (all scenarios) | Shipment Builder \| Candidate for Shipping Batch Job |
+| TC-7940-run-grouping-job.spec.js | tests/batch-jobs.spec.ts | Batch infra (all scenarios) | Shipment Builder \| Grouping Batch Job |
+| TC-7941-cancel-sales-order.spec.js | tests/cancel-sales-order.spec.ts | D Channel \| Scenario 73 | D Channel \| Scenario 73 — Cancel Direct Delivery Sales Order |
+
+### New Page Object Models created during conversion
+
+| New POM | Source | Description |
+|---|---|---|
+| Pages/NavigationPage.ts | Pages/NavigationPage.js | expandNav, navigateToModule, navigateViaMenu (renamed from navigateTo to avoid BasePage conflict) |
+| Pages/VoyagePage.ts | Pages/VoyagePage.js | VoyageListPage, VoyageEditorPage, VoyageCreateDialog — Landed Cost voyage management |
+| Pages/PurchaseOrderPage.ts (extended) | Pages/PurchaseOrderPage (1).js | Added W/D-channel dialog fields, header/lines view toggle, approval status getter |
+
+### Test naming convention
+
+All tests in this regression pack must follow the O2C naming standard:
+
+```
+test.describe('<Feature Area> | Scenario <N> — <Brief description>', () => {
+  test('<Feature Area> | Scenario <N> — <Action and assertion>', async ({ page }) => {
+```
+
+For infrastructure tests without a scenario number:
+
+```
+test.describe('<Feature Area> | <Function Name>', () => {
+  test('<Feature Area> | <Function Name>', async ({ page }) => {
+```
+
+Examples from the spec files:
+- `'D Channel | Scenario 64 — Create W Channel Direct Delivery Order'`
+- `'D Channel | Scenario 73 — Cancel Direct Delivery Sales Order and verify status = Cancelled'`
+- `'Shipment Builder | Candidate for Shipping Batch Job'`
+- `'Landed Cost | Create Standard Voyage (TC-4409)'`
 
 ---
 

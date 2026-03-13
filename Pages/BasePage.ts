@@ -25,11 +25,33 @@ export class BasePage {
 
   async safeClick(locator: Locator): Promise<void> {
     await locator.waitFor({ state: "visible" });
+    // Move mouse away first to dismiss any D365 qtip super-tooltip that may
+    // be blocking pointer events over the target element.
+    await this.page.mouse.move(0, 0);
     await locator.click();
   }
 
   async waitForProcessing(): Promise<void> {
     await this.page.waitForLoadState("networkidle");
+  }
+
+  /** Wait for D365's global loading overlay to clear, then click. Retries up to 8 times. */
+  async clickWhenUnblocked(locator: Locator): Promise<void> {
+    let lastError: unknown;
+    for (let attempt = 1; attempt <= 8; attempt++) {
+      const shellBlocker = this.page.locator('#ShellBlockingDiv.applicationShell-blockingMessage');
+      if (await shellBlocker.isVisible({ timeout: 1_500 }).catch(() => false)) {
+        await shellBlocker.waitFor({ state: 'hidden', timeout: 30_000 }).catch(() => {});
+      }
+      try {
+        await locator.click({ timeout: 8_000 });
+        return;
+      } catch (error) {
+        lastError = error;
+        await this.page.waitForTimeout(300 * attempt);
+      }
+    }
+    throw lastError;
   }
 
   // ── Data capture helpers ─────────────────────────────────────────────────

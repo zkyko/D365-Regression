@@ -46,6 +46,12 @@ export default defineConfig({
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
+
+    headless: false,
+    viewport: { width: 1920, height: 1080 },
+    launchOptions: {
+      slowMo: 300, // Just enough to see the clicks, but not enough to kill your productivity
+    },
   },
 
   /* Browser projects */

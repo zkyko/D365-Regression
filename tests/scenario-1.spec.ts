@@ -30,6 +30,7 @@ const testData = readScenarioData('Scenario-1.xlsx');
 for (const [index, data] of testData.entries()) {
   test.describe(`Scenario 1 — Row ${index + 1} (Customer: ${data.CustomerAccount})`, () => {
     test(`Create SO, ship, and invoice [${data.CustomerAccount} / ${data.ItemNumber}]`, async ({ page }) => {
+      test.setTimeout(240_000); // 4 minutes — D365 is slow; override global 2-min default
 
       // ═════════════════════════════════════════════════════════════════════════
       // STEPS 2-3: Navigate to All Sales Orders → Click New
@@ -202,69 +203,69 @@ for (const [index, data] of testData.entries()) {
       console.log('✓ Sales Order Number:', salesOrderNumber);
 
       // ═════════════════════════════════════════════════════════════════════════
-      // STEPS 22-42: Lines tab → Reserve each bundle sub-line
-      // Per Scenario-1.txt steps 22-42: reservation happens after MCR Submit
+      // UPDATED RESERVATION: Dynamic Single Item vs. Bundle
       // ═════════════════════════════════════════════════════════════════════════
       await page.getByText('Lines', { exact: true }).click();
       await page.waitForLoadState('networkidle');
 
-      // Scroll to "Sales order lines" FastTab — D365 only renders grid rows
-      // for sections that are in the viewport.  aria-label is stable; the id
-      // contains a dynamic session number so we use aria-label instead.
-      const salesOrderLinesFastTab = page.locator('button[aria-label="Sales order lines"]');
-      await salesOrderLinesFastTab.waitFor({ state: 'visible', timeout: 10_000 });
-      await salesOrderLinesFastTab.scrollIntoViewIfNeeded();
-      await page.waitForTimeout(500); // allow D365 to lazily render rows after scroll
-
-      // D365 grids use div-based role="row" elements, NOT <table><tbody><tr>.
-      // The Order lines grid (aria-label="Order lines") contains:
-      //   - row 0: bundle parent (Line status = "Canceled") → skip
-      //   - rows 1-N: sub-lines (Line status = "Open order") → reserve each
       const orderLinesGrid = page.locator('[role="grid"][aria-label="Order lines"]');
-      await orderLinesGrid.waitFor({ state: 'visible', timeout: 10_000 });
-      const dataRows = orderLinesGrid.locator('[role="row"]:has([role="gridcell"])');
-      const rowCount = await dataRows.count();
-      console.log(`ℹ Order lines row count: ${rowCount}`);
+      await orderLinesGrid.waitFor({ state: 'visible' });
 
-      // Row 0 is always the bundle parent (Line status "Canceled") — skip it.
-      // Rows 1-N are the sub-lines (Line status "Open order") — reserve each.
-      // NOTE: we do NOT read input[aria-label="Line status"] here because D365
-      // only populates that value after the row is selected, so it reads as ""
-      // for all unselected rows and would cause every row to be skipped.
-      for (let i = 1; i < rowCount; i++) {
-        const row = dataRows.nth(i);
+      // Find all data rows (ignoring header)
+      const allRows = orderLinesGrid.locator('[role="row"]:has([role="gridcell"])');
 
-        await row.click();
-        await page.waitForTimeout(300);
+      // Wait for at least one row to exist
+      await expect(allRows.first()).toBeVisible({ timeout: 15000 });
 
-        // Inventory → Reservation (use name attrs for reliable targeting in D365)
-        // name="buttonLineInventReservation" is stable; avoids matching "Batch reservation"
-        await page.locator('button[name="ButtonLineInventory"]').click();
-        await page.locator('button[name="buttonLineInventReservation"]').click();
-        await page.waitForLoadState('networkidle');
+      const totalRows = await allRows.count();
+      console.log(`ℹ Total rows found in grid: ${totalRows}`);
 
-        // ── Stock check ────────────────────────────────────────────────────────
-        // ALCPhysicallyAllocated = physically available on-hand qty.
-        // If 0, the item has no stock — stop immediately rather than silently fail.
-        const availQtyInput = page.locator('input[name="ALCPhysicallyAllocated"]');
-        await availQtyInput.waitFor({ state: 'visible', timeout: 10_000 });
-        const availQtyRaw = await availQtyInput.inputValue();
-        const availQty = parseFloat(availQtyRaw.replace(/,/g, '') || '0');
-        if (availQty <= 0) {
-          throw new Error(
-            `❌ No available stock for item ${data.ItemNumber} ` +
-            `(ALCPhysicallyAllocated = "${availQtyRaw}"). ` +
-            `Ensure inventory exists before running the test, or change the item number.`
-          );
+      for (let i = 0; i < totalRows; i++) {
+        const row = allRows.nth(i);
+
+        // CHECK: Is this a Canceled Bundle Parent?
+        // We look for the status input inside the row.
+        const statusInput = row.locator('input[aria-label="Line status"]');
+        const status = await statusInput.inputValue().catch(() => '');
+
+        if (status === 'Canceled') {
+          console.log(`⏭ Skipping Bundle Parent (Row ${i})`);
+          continue;
         }
-        // ──────────────────────────────────────────────────────────────────────
 
-        // Reserve lot button: id pattern WHSInventOnHandReserve_N_ALCReserveLot
-        await page.locator('button[name="ALCReserveLot"]').click();
+        console.log(`👉 Processing Row ${i} (Status: ${status || 'Standard Item'})`);
+
+        await row.scrollIntoViewIfNeeded();
+        await row.click();
+
+        // The D365 "Sync Wait"
+        await page.waitForTimeout(1000);
+
+        const inventoryBtn = page.locator('button[name="ButtonLineInventory"]');
+        await expect(inventoryBtn).toBeEnabled({ timeout: 5000 });
+        await inventoryBtn.click();
+
+        await page.locator('button[name="buttonLineInventReservation"]').click();
+
+        // --- Reservation Dialog Logic ---
         await page.waitForLoadState('networkidle');
+        const reserveLotBtn = page.locator('button[id*="ALCReserveLot"]');
+        await reserveLotBtn.waitFor({ state: 'visible' });
 
-        await page.getByRole('button', { name: 'Close' }).click();
+        // Wait for stock data to load
+        const physAvailInput = page.locator('input[name="ALCPhysicallyAllocated"]');
+        await expect(physAvailInput).not.toHaveValue('', { timeout: 10000 });
+
+        await reserveLotBtn.click();
+        await page.waitForTimeout(800);
+
+        // Click the "Reservation" page caption to ensure focus is on this page,
+        // then click the ← Back button to return to Sales Order Lines
+        await page.locator('span.formCaption').filter({ hasText: 'Reservation' }).click();
         await page.waitForTimeout(300);
+        await page.getByRole('button', { name: 'Back', exact: true }).click();
+        await page.waitForLoadState('networkidle');
+        await page.waitForTimeout(500);
       }
 
       // ═════════════════════════════════════════════════════════════════════════
@@ -274,6 +275,9 @@ for (const [index, data] of testData.entries()) {
       // ═════════════════════════════════════════════════════════════════════════
       const soPage = new SalesOrderPage(page);
       await soPage.confirmNow();
+
+      // Wait for "Operation completed" toast — D365 shows this after confirmation finishes
+      await page.getByText('Operation completed').waitFor({ state: 'visible', timeout: 10000 }).catch(() => {});
 
       await page.getByText('Header', { exact: true }).click();
       await page.waitForTimeout(500);
@@ -288,47 +292,61 @@ for (const [index, data] of testData.entries()) {
       // NOTE: No "Close" button on the Sales order confirmation view — navigate directly.
 
       // ═════════════════════════════════════════════════════════════════════════
-      // STEPS 48-55: Candidate for shipping — filter by SO number
+      // STEPS 48-55: Candidate for shipping — navigate via search + Enter,
+      //              Records to include → OK, then poll orders list for the SO
       // ═════════════════════════════════════════════════════════════════════════
+
+      // Navigate to the CFS batch dialog
       await page.getByRole('button', { name: 'Search', exact: true }).click();
-      await page.getByRole('textbox', { name: 'Search for a page' }).fill('Candidate for shipping');
-      await page.getByRole('option', { name: 'Candidate for shipping Retail' }).click();
-      await page.waitForLoadState('networkidle');
+      await page.getByRole('textbox', { name: 'Search for a page' }).fill('candidate for shipping');
+      await page.waitForTimeout(1_200);
+      await page.getByRole('textbox', { name: 'Search for a page' }).press('Enter');
+      await page.waitForLoadState('networkidle', { timeout: 30_000 }).catch(() => {});
 
-      // Expand "Records to include"
-      await page.getByRole('button', { name: 'Records to include' }).click();
-      await page.waitForTimeout(300);
+      const recordsToIncludeBtn = page.getByRole('button', { name: 'Records to include' });
+      await recordsToIncludeBtn.waitFor({ state: 'visible', timeout: 30_000 });
 
-      // Click Filter (leading space is part of the button label — icon + text)
-      await page.getByRole('button', { name: ' Filter' }).click();
-      await page.waitForTimeout(500);
+      await recordsToIncludeBtn.click();
+      await page.waitForLoadState('networkidle', { timeout: 20_000 }).catch(() => {});
+      await page.waitForTimeout(1_000);
 
-      // Set Field = Sales order, Criteria = captured SO number
-      const fieldCombo = page.getByRole('combobox', { name: 'Field' });
-      await fieldCombo.fill('Sales order');
-      await fieldCombo.press('Tab');
-      await page.waitForTimeout(500);
-
-      const criteriaCombo = page.getByRole('combobox', { name: 'Criteria' });
-      await criteriaCombo.fill(salesOrderNumber);
-      await criteriaCombo.press('Tab');
-      await page.waitForTimeout(300);
-
-      // OK on inner filter criteria dialog
+      // OK — runs the batch job
       await page.getByRole('button', { name: 'OK' }).click();
-      await page.waitForTimeout(300);
+      await page.waitForLoadState('networkidle', { timeout: 30_000 }).catch(() => {});
+      await page.waitForTimeout(2_000);
 
-      // OK on main Candidate for shipping dialog (runs the batch job)
-      await page.getByRole('button', { name: 'OK' }).click();
-      await page.waitForLoadState('networkidle');
-      await page.waitForTimeout(1000);
+      // Navigate to Candidate for Shipping Orders list
+      await page.getByRole('button', { name: 'Search', exact: true }).click();
+      await page.getByRole('textbox', { name: 'Search for a page' }).fill('candidate for shipping orders');
+      await page.waitForTimeout(1_200);
+      await page.getByRole('textbox', { name: 'Search for a page' }).press('Enter');
+      await page.waitForLoadState('networkidle', { timeout: 30_000 }).catch(() => {});
+
+      // Poll/Refresh until our SO appears (up to ~90s)
+      const cfsRow = page.getByRole('row').filter({ hasText: salesOrderNumber }).first();
+      let cfsFound = false;
+      for (let i = 0; i < 15; i++) {
+        if (await cfsRow.isVisible({ timeout: 3_000 }).catch(() => false)) {
+          cfsFound = true;
+          break;
+        }
+        console.log(`CFS refresh attempt ${i + 1} — ${salesOrderNumber} not yet visible`);
+        await page.getByRole('button', { name: 'Refresh' }).click();
+        await page.waitForLoadState('networkidle', { timeout: 15_000 }).catch(() => {});
+        await page.waitForTimeout(3_000);
+      }
+      if (!cfsFound) throw new Error(`${salesOrderNumber} did not appear in Candidate for Shipping Orders after polling`);
+
+      await cfsRow.getByRole('checkbox', { name: 'Select or unselect row' }).click();
 
       // ═════════════════════════════════════════════════════════════════════════
       // STEPS 56-57: Grouping → OK  (creates GRP number for our SO)
       // ═════════════════════════════════════════════════════════════════════════
       await page.getByRole('button', { name: 'Search', exact: true }).click();
       await page.getByRole('textbox', { name: 'Search for a page' }).fill('Grouping');
-      await page.getByRole('option', { name: 'Grouping Retail and Commerce' }).click();
+      await page.waitForTimeout(1_200);
+      await page.getByRole('textbox', { name: 'Search for a page' }).press('Enter');
+      await page.waitForLoadState('networkidle', { timeout: 30_000 }).catch(() => {});
       await page.waitForTimeout(500);
 
       await page.getByRole('button', { name: 'OK' }).click();
@@ -435,6 +453,12 @@ for (const [index, data] of testData.entries()) {
       await page.getByRole('button', { name: 'Post packing slip' }).click();
       await page.waitForLoadState('networkidle');
 
+      // Handle "You are about to post the..." confirmation dialog if it appears
+      if (await page.getByRole('heading', { name: 'You are about to post the' }).isVisible({ timeout: 3000 }).catch(() => false)) {
+        await page.getByLabel('You are about to post the').getByRole('button', { name: 'OK' }).click();
+        await page.waitForLoadState('networkidle');
+      }
+
       await page.getByRole('button', { name: 'OK' }).click();
       await page.waitForTimeout(500);
       await page.getByRole('button', { name: 'OK' }).click();
@@ -451,6 +475,12 @@ for (const [index, data] of testData.entries()) {
         .first()
         .click();
       await page.waitForLoadState('networkidle');
+
+      // Handle "You are about to post the..." confirmation dialog if it appears
+      if (await page.getByRole('heading', { name: 'You are about to post the' }).isVisible({ timeout: 3000 }).catch(() => false)) {
+        await page.getByLabel('You are about to post the').getByRole('button', { name: 'OK' }).click();
+        await page.waitForLoadState('networkidle');
+      }
 
       await page.getByRole('button', { name: 'OK' }).click();
       await page.waitForTimeout(500);

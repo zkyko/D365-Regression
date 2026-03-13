@@ -171,17 +171,34 @@ for (const [index, data] of testData.entries()) {
 
       // Re-open the SO from list to ensure we are in the main Sales order form context.
       await soListPage.navigate();
+      await page.waitForLoadState('networkidle');
+
+      // D365 Quick Filter requires real keyboard events; pressSequentially fires them correctly.
       const filterCombo = page.getByRole('combobox', { name: 'Filter' }).first();
       if (await filterCombo.isVisible({ timeout: 10_000 }).catch(() => false)) {
-        await filterCombo.fill(salesOrderNumber);
+        await filterCombo.click();
+        await page.keyboard.press('Control+a');
+        await page.keyboard.press('Delete');
+        await filterCombo.pressSequentially(salesOrderNumber, { delay: 60 });
+        await page.waitForTimeout(400);
         await filterCombo.press('Enter');
-        await page.waitForTimeout(1_000);
+        await page.waitForLoadState('networkidle', { timeout: 20_000 }).catch(() => {});
+        await page.waitForTimeout(2_000);
       }
-      const soLinkInList = page.getByRole('link', { name: new RegExp(escapeRegExp(salesOrderNumber)) }).first();
-      if (await soLinkInList.isVisible({ timeout: 10_000 }).catch(() => false)) {
-        await soLinkInList.click();
+
+      // Wait for the specific SO's textbox to appear in the grid before clicking.
+      const soTextboxInGrid = page.getByRole('textbox', { name: 'Sales order' })
+        .filter({ hasText: new RegExp(`^${escapeRegExp(salesOrderNumber)}$`) }).first();
+      if (await soTextboxInGrid.isVisible({ timeout: 15_000 }).catch(() => false)) {
+        await soTextboxInGrid.click();
       } else {
-        await page.getByRole('row').filter({ hasText: salesOrderNumber }).first().click();
+        const soLinkInList = page.getByRole('link', { name: new RegExp(escapeRegExp(salesOrderNumber)) }).first();
+        if (await soLinkInList.isVisible({ timeout: 8_000 }).catch(() => false)) {
+          await soLinkInList.click();
+        } else {
+          const soGridCell = page.locator('[role="gridcell"]').filter({ hasText: new RegExp(`^${escapeRegExp(salesOrderNumber)}$`) }).first();
+          await soGridCell.click({ timeout: 20_000 });
+        }
       }
       await page.waitForLoadState('networkidle');
 

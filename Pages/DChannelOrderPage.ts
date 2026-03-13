@@ -4,84 +4,66 @@ import { BasePage } from "./BasePage";
 /**
  * DChannelOrderPage — Direct Channel (D Channel / Drop Ship) order management.
  *
- * D Channel orders are sales orders where a vendor ships directly to the customer.
- * They link an SO to a PO. Key differences from regular SOs:
- *   - "Direct delivery" flag on line items
- *   - Linked Purchase Order (PO) is auto-created
- *   - Ship window (date range) must be set
- *   - Freight terms: "customer carries" vs "FH carries"
- *   - Deposits may be required
- *   - EDI orders come in via trading partner (not manually created)
+ * D Channel orders are Sales Orders with Sales origin = "D" (D-channel).
+ * A vendor ships directly to the customer via a linked Purchase Order.
  *
  * Used by: tests/d-channel.spec.ts
  * Scenarios: 58–75, 120–123
  *
- * ─── HOW TO FIND LOCATORS ────────────────────────────────────────────────────
- * D Channel orders are likely created from the same "All Sales Orders" list page
- * but with a different order type or channel flag. Steps to explore:
- *
- * 1. Navigate: Sales and Marketing > Sales Orders > All Sales Orders → New
- *    OR: Retail and Commerce > Channels > D Channel > D Channel Orders (if exists)
- * 2. When creating the SO, there may be a "Channel" or "Order type" field
- *    that distinguishes D Channel from W Channel.
- * 3. On the SO Lines tab, look for a "Direct delivery" checkbox per line.
- * 4. The linked PO is likely accessible from the SO Line via:
- *    Lines tab → "Linked purchase order" link or a "Purchase" action pane button.
- * 5. Ship window: likely on the Header tab or a dedicated "Delivery" FastTab.
- * 6. Deposit: check MCR Order Recap (same Complete flow as regular SO) or a
- *    separate Deposit button on the SO Action Pane.
- * ─────────────────────────────────────────────────────────────────────────────
+ * Locators verified against live D365 (fourhands-test sandbox) on 2026-03-12.
  */
 export class DChannelOrderPage extends BasePage {
 
-  // ─── TODO: Locators — all need confirming against live D365 ───────────────
+  // ─── New SO dialog ────────────────────────────────────────────────────────
+  readonly custAccountInput: Locator = this.page.locator(`[data-dyn-controlname="SalesTable_CustAccount"] input`);
+  readonly salesOriginInput: Locator = this.page.locator(`[data-dyn-controlname="Administration_SalesOriginId"] input`);
+  readonly rsmDelayPaymentBtn: Locator = this.page.locator(`[data-dyn-controlname="SalesTable_rsmDelayPayment"]`);
+  readonly custPOInput: Locator = this.page.locator(`input[name="References_PurchOrderFormNum"]`);
+  readonly shippingDateInput: Locator = this.page.locator(`[data-dyn-controlname="SalesTable_ShippingDateRequested"] input`);
+  readonly dialogOKBtn: Locator = this.page.locator(`[data-dyn-controlname="OK"][name="OK"]`);
 
-  // ─── SO creation / channel flag ───────────────────────────────────────────
-  // TODO: Find where channel type is set (may be on new SO dialog or Header tab)
-  // readonly channelTypeCombo: Locator = this.page.getByRole('combobox', { name: 'TODO: channel field' });
+  // ─── SO form — Lines tab ──────────────────────────────────────────────────
+  readonly itemIdInput: Locator = this.page.locator(`input[aria-label="Item number"]`);
+  readonly salesQtyInput: Locator = this.page.locator(`input[aria-label="Quantity"]`);
+  readonly salesPriceInput: Locator = this.page.locator(`input[aria-label="Unit price"]`);
+  readonly addLineBtn: Locator = this.page.locator(`[data-dyn-controlname="LineStripNew"]`);
+  readonly cancelLinesBtn: Locator = this.page.locator(`[data-dyn-controlname="rsmCancelSOLines"]`);
 
-  // ─── Direct delivery on SO line ───────────────────────────────────────────
-  // TODO: Inspect SO Lines grid for "Direct delivery" checkbox per line
-  // readonly directDeliveryCheckbox: Locator = this.page.locator('input[name="TODO_DirectDelivery"]');
+  // ─── SO form — Header tab ─────────────────────────────────────────────────
+  readonly headerTab: Locator = this.page.locator(`[data-dyn-controlname="HeaderView_header"]`);
+  readonly shipWindowStart: Locator = this.page.locator(`[data-dyn-controlname="rsmHeaderShipmentWindow_rsmShippingStartDate"] input`);
+  readonly shipWindowEnd: Locator = this.page.locator(`[data-dyn-controlname="rsmHeaderShipmentWindow_rsmShippingEndDate"] input`);
+  readonly freightTermsInput: Locator = this.page.locator(`[data-dyn-controlname="Delivery_DlvTerm"] input`);
 
-  // ─── Ship window fields (Header or Delivery tab) ──────────────────────────
-  // TODO: Find "Ship window from" and "Ship window to" date fields
-  // readonly shipWindowFromInput: Locator = this.page.locator('input[name="TODO_ShipWindowFrom"]');
-  // readonly shipWindowToInput: Locator = this.page.locator('input[name="TODO_ShipWindowTo"]');
+  // ─── SO Action Pane ───────────────────────────────────────────────────────
+  readonly completeBtn: Locator = this.page.locator(`[data-dyn-controlname="Complete"][name="Complete"]`);
+  readonly directDeliveryBtn: Locator = this.page.locator(`[data-dyn-controlname="buttonCreateDropShipment"][name="buttonCreateDropShipment"]`);
+  readonly chargesBtn: Locator = this.page.locator(`[data-dyn-controlname="ButtonMarkupTransHeading"][name="ButtonMarkupTransHeading"]`);
+  readonly cancelOrderBtn: Locator = this.page.locator(`[data-dyn-controlname="rsmSalesCancelOrderWithReasonController"]`);
+  readonly salesOrderActionTab: Locator = this.page.locator(`[data-dyn-form-name="SalesTable"] [data-dyn-controlname="SalesOrder"]`);
+  readonly generalTab: Locator = this.page.locator(`[data-dyn-form-name="SalesTable"] [data-dyn-controlname="General"]`);
 
-  // ─── Freight terms ────────────────────────────────────────────────────────
-  // TODO: Find "Delivery terms" or "Freight terms" field (likely a combobox)
-  // readonly freightTermsCombo: Locator = this.page.getByRole('combobox', { name: 'Delivery terms' });
+  // ─── Linked PO (via General → References) ────────────────────────────────
+  readonly referencesBtn: Locator = this.page.locator(`[data-dyn-controlname="buttonReferences"][name="buttonReferences"]`);
+  readonly purchTableBtn: Locator = this.page.locator(`[data-dyn-controlname="buttonPurchTable"][name="buttonPurchTable"]`);
+  readonly referencesOKBtn: Locator = this.page.locator(`[data-dyn-controlname="OkButton"][name="OkButton"]`);
+  readonly purchIdField: Locator = this.page.locator(`input[aria-label="Purchase order"]`);
+  readonly poStatusField: Locator = this.page.locator(`input[name="PurchStatus"]`);
 
-  // ─── Charges / fees (LCL, freight, transportation) ───────────────────────
-  // TODO: Find the "Charges" button on the SO Action Pane (likely under "Sell" tab)
-  // readonly chargesBtn: Locator = this.page.locator('button[name="TODO_ChargesButton"]');
-  // readonly chargesGrid: Locator = this.page.locator('[role="grid"][aria-label*="Charges"]');
-  // readonly chargesCodeCombo: Locator = this.page.getByRole('combobox', { name: 'Charges code' });
-  // readonly chargesValueInput: Locator = this.page.locator('input[name="TODO_ChargesValue"]');
+  // ─── MCR Complete / deposit flow ─────────────────────────────────────────
+  readonly addDepositBtn: Locator = this.page.locator(`[data-dyn-controlname="AddBtn"][name="AddBtn"]`);
+  readonly tenderTypeInput: Locator = this.page.locator(`[data-dyn-controlname="Identification_TenderTypeId"] input`);
+  readonly mcrOKBtn: Locator = this.page.locator(`[data-dyn-controlname="OKButton"][name="OKButton"]`);
+  readonly submitBtn: Locator = this.page.locator(`[data-dyn-controlname="SubmitButton"][name="SubmitButton"]`);
+  readonly confirmYesBtn: Locator = this.page.locator(`[data-dyn-controlname="Yes"][name="Yes"]`);
+  readonly commandButtonOK: Locator = this.page.locator(`[data-dyn-controlname="CommandButtonOK"][name="CommandButtonOK"]`);
 
-  // ─── Deposit ──────────────────────────────────────────────────────────────
-  // TODO: Find deposit button — may be on MCR Order Recap or SO Action Pane
-  // readonly depositAmountInput: Locator = this.page.locator('input[name="TODO_DepositAmount"]');
+  // ─── Charges form ─────────────────────────────────────────────────────────
+  readonly chargesCodeInput: Locator = this.page.locator(`[data-dyn-controlname="MarkupTrans_MarkupCode"] input`);
+  readonly chargesValueInput: Locator = this.page.locator(`[data-dyn-controlname="MarkupTrans_MarkupValue"] input`);
 
-  // ─── Linked PO ────────────────────────────────────────────────────────────
-  // TODO: Find the link to the auto-generated PO from the SO
-  // Could be on Lines tab → right-click → "View details" or a "Purchase order" link
-  // readonly linkedPOLink: Locator = this.page.getByRole('link').filter({ hasText: /^PO\d+/ });
-
-  // ─── PO status / address fields ───────────────────────────────────────────
-  // TODO: On the linked PO, find status field and delivery address fields
-  // readonly poStatusField: Locator = this.page.locator('input[name="TODO_POStatus"]');
-  // readonly poDeliveryNameInput: Locator = this.page.locator('input[name="TODO_DeliveryName"]');
-  // readonly poDeliveryAddressInput: Locator = this.page.locator('input[name="TODO_DeliveryAddress"]');
-
-  // ─── Vendor account on SO line ────────────────────────────────────────────
-  // TODO: Inspect the SO Lines grid for a "Vendor account" column
-  // readonly lineVendorField: Locator = this.page.locator('input[name="TODO_LineVendor"]');
-
-  // ─── Cancel order / line ──────────────────────────────────────────────────
-  // TODO: Find cancel button — may be on the Action Pane or via a status change
-  // readonly cancelOrderBtn: Locator = this.page.locator('button[name="TODO_CancelOrder"]');
+  // ─── Assertions ──────────────────────────────────────────────────────────
+  readonly headerTitle: Locator = this.page.locator(`[data-dyn-controlname="HeaderTitle"]`);
 
   constructor(page: Page) {
     super(page, page.context());
@@ -89,326 +71,359 @@ export class DChannelOrderPage extends BasePage {
 
   // ─── Methods ──────────────────────────────────────────────────────────────
 
-  /**
-   * Navigate to the D Channel order list.
-   *
-   * TODO: Confirm the correct navigation path. Options:
-   *   - "All sales orders" filtered by channel type
-   *   - A dedicated D Channel menu item
-   * Navigate using the top-bar search as with other pages.
-   */
+  /** Navigate to the All Sales Orders list page. */
   async navigate(): Promise<void> {
-    // TODO: Confirm the exact search term and option text for D Channel orders
-    // await this.navigateTo('All sales orders', 'All sales orders Accounts receivable');
-    console.warn('⚠ DChannelOrderPage.navigate() — TODO: confirm navigation path');
-    throw new Error('DChannelOrderPage.navigate() not yet implemented — see TODO in Pages/DChannelOrderPage.ts');
+    await this.navigateTo('All sales orders', 'All sales orders Accounts receivable');
   }
 
   /**
-   * Create a new D Channel order with the given customer and PO.
-   *
-   * This is similar to SalesOrderPage.fillNewOrderDialog() but may have
-   * additional fields (channel type, order type) in the New SO dialog.
+   * Create a new D Channel SO from the All Sales Orders list.
+   * Sets Sales origin = "D" (D-channel) in the New SO dialog.
    *
    * Scenarios 58–65, 122–123.
    *
-   * TODO: Inspect the "New sales order" dialog for D channel-specific fields.
-   *
    * @param customerAccount  D365 customer account number
    * @param customerPO       Optional customer PO reference
+   * @param shipDate         Optional requested ship date (MM/DD/YYYY)
    */
-  async createNewOrder(customerAccount: string, customerPO?: string): Promise<void> {
-    // TODO: implement — likely same as SalesOrderPage.fillNewOrderDialog()
-    // but with channel-type field set to "D Channel" or equivalent
-    console.warn('⚠ DChannelOrderPage.createNewOrder() — TODO: not yet implemented');
-    throw new Error('DChannelOrderPage.createNewOrder() not yet implemented');
+  async createNewOrder(customerAccount: string, customerPO?: string, shipDate?: string): Promise<void> {
+    await this.safeClick(this.page.locator(`[data-dyn-controlname="SystemDefinedNewButton"][name="SystemDefinedNewButton"]`));
+    await this.waitForProcessing();
+
+    await this.safeFill(this.custAccountInput, customerAccount);
+    await this.waitForProcessing();
+
+    // Toggle delay-payment (required for D-channel deposit flow)
+    await this.safeClick(this.rsmDelayPaymentBtn);
+    await this.waitForProcessing();
+
+    // Set Sales origin to "D" (D-channel) — field is in the Administration section
+    await this.safeFill(this.salesOriginInput, 'D');
+    await this.salesOriginInput.press('Tab');
+    await this.waitForProcessing();
+
+    if (customerPO) {
+      await this.safeFill(this.custPOInput, customerPO);
+    }
+
+    if (shipDate) {
+      await this.safeFill(this.shippingDateInput, shipDate);
+      await this.shippingDateInput.press('Tab');
+    }
+
+    await this.safeClick(this.dialogOKBtn);
+    await this.waitForProcessing();
   }
 
   /**
-   * Set the ship window (from/to dates) on the order.
+   * Set the ship window (from/to dates) on the order Header tab.
+   * Fields: rsmHeaderShipmentWindow_rsmShippingStartDate / rsmShippingEndDate
    *
-   * All D Channel scenarios require "Ensure ship window is set."
-   *
-   * TODO: Find where ship window is on the SO form.
-   *   - Check Header tab → "Delivery" FastTab
-   *   - May be "Requested ship date" (from) + "Ship date" (to)
-   *   - Or dedicated "Ship window from" / "Ship window to" fields
-   *
-   * @param fromDate  Start date string (e.g. "03/01/2026")
-   * @param toDate    End date string  (e.g. "03/15/2026")
+   * @param fromDate  Start date (MM/DD/YYYY)
+   * @param toDate    End date   (MM/DD/YYYY)
    */
   async setShipWindow(fromDate: string, toDate: string): Promise<void> {
-    // TODO: implement after locators are confirmed
-    // await this.headerTab.click(); (reuse SalesOrderPage.headerTab if accessible)
-    // await this.shipWindowFromInput.fill(fromDate);
-    // await this.shipWindowFromInput.press('Tab');
-    // await this.shipWindowToInput.fill(toDate);
-    // await this.shipWindowToInput.press('Tab');
-    console.warn('⚠ DChannelOrderPage.setShipWindow() — TODO: not yet implemented');
-    throw new Error('DChannelOrderPage.setShipWindow() not yet implemented');
+    await this.safeClick(this.headerTab);
+    await this.waitForProcessing();
+    await this.safeFill(this.shipWindowStart, fromDate);
+    await this.shipWindowStart.press('Tab');
+    await this.safeFill(this.shipWindowEnd, toDate);
+    await this.shipWindowEnd.press('Tab');
+    await this.waitForProcessing();
   }
 
   /**
    * Set the delivery/freight terms on the order.
    *
-   * @param terms  e.g. "CustomerCarries", "Prepaid", "FHCarries"
+   * @param terms  Delivery terms code (e.g. "PREPAID", "COLLECT")
    */
   async setFreightTerms(terms: string): Promise<void> {
-    // TODO: implement after locators are confirmed
-    // await this.freightTermsCombo.fill(terms);
-    // await this.freightTermsCombo.press('Tab');
-    console.warn('⚠ DChannelOrderPage.setFreightTerms() — TODO: not yet implemented');
-    throw new Error('DChannelOrderPage.setFreightTerms() not yet implemented');
+    // Map logical scenario labels to actual D365 delivery terms codes
+    const codeMap: Record<string, string> = {
+      'CustomerCarries': 'FOB',
+      'FHCarries': 'PREPAID',
+    };
+    const code = codeMap[terms] ?? terms;
+
+    // Delivery_DlvTerm is on the Header tab → Misc. delivery info group
+    await this.safeClick(this.headerTab);
+    await this.waitForProcessing();
+    await this.safeFill(this.freightTermsInput, code);
+    await this.freightTermsInput.press('Tab');
+    await this.waitForProcessing();
   }
 
   /**
-   * Add a charge (LCL fee, freight charge, or transportation charge) to the SO.
+   * Add a charge (LCL fee, freight, transportation) to the SO.
+   * Opens Sell → Maintain charges, adds a new row with code and amount.
    *
-   * Scenarios 58 (LCL fee), 59 (freight charge), 60 (transportation charge), 61 (freight).
+   * Scenarios 58 (LCL), 59 (freight), 60 (transportation), 61 (freight).
    *
-   * TODO: Steps to implement:
-   *   1. Click the "Charges" button on the SO Action Pane (check "Sell" tab)
-   *   2. In the Charges grid, click New
-   *   3. Set the Charges code (e.g. "LCL", "FREIGHT", "TRANS")
-   *   4. Set the charge value / amount
-   *   5. Click Save / Close
-   *
-   * @param chargesCode  The charge type code (e.g. "LCL", "FREIGHT", "TRANS")
-   * @param amount       The charge amount as a string (e.g. "150.00")
+   * @param chargesCode  Charge type code (e.g. "LCL", "FREIGHT")
+   * @param amount       Charge amount (e.g. "150.00")
    */
   async addCharge(chargesCode: string, amount: string): Promise<void> {
-    // TODO: implement after locators are confirmed
-    // await this.chargesBtn.click();
-    // await this.page.waitForTimeout(300);
-    // await this.page.getByRole('button', { name: 'New' }).click();
-    // await this.chargesCodeCombo.fill(chargesCode);
-    // await this.chargesCodeCombo.press('Tab');
-    // await this.chargesValueInput.fill(amount);
-    // await this.chargesValueInput.press('Tab');
-    // await this.page.getByRole('button', { name: 'Save' }).click();
-    // await this.waitForProcessing();
-    console.warn('⚠ DChannelOrderPage.addCharge() — TODO: not yet implemented');
-    throw new Error('DChannelOrderPage.addCharge() not yet implemented');
+    await this.safeClick(this.chargesBtn);
+    await this.waitForProcessing();
+    await this.safeClick(this.page.locator(`[data-dyn-controlname="SystemDefinedNewButton"]`).last());
+    await this.waitForProcessing();
+    await this.safeFill(this.chargesCodeInput, chargesCode);
+    await this.chargesCodeInput.press('Tab');
+    await this.safeFill(this.chargesValueInput, amount);
+    await this.chargesValueInput.press('Tab');
+    await this.waitForProcessing();
+    await this.safeClick(this.page.locator(`[data-dyn-controlname="SystemDefinedSaveButton"]`));
+    await this.waitForProcessing();
   }
 
   /**
    * Verify the vendor account on a specific SO line.
-   *
-   * Scenario 65: D channel order with 2 vendors — ensure correct vendor per line.
+   * Scenario 65: D channel order with 2 vendors.
    *
    * @param lineIndex       0-based row index
    * @param expectedVendor  Expected vendor account number
    */
   async verifyLineVendorAccount(lineIndex: number, expectedVendor: string): Promise<void> {
-    // TODO: implement after locators are confirmed
-    // const dataRows = this.page.locator('[role="grid"][aria-label="Order lines"] [role="row"]:has([role="gridcell"])');
-    // const vendorCell = dataRows.nth(lineIndex).locator('input[name="TODO_LineVendor"]');
-    // await expect(vendorCell).toHaveValue(expectedVendor, { timeout: 5_000 });
-    console.warn('⚠ DChannelOrderPage.verifyLineVendorAccount() — TODO: not yet implemented');
-    throw new Error('DChannelOrderPage.verifyLineVendorAccount() not yet implemented');
+    const dataRows = this.page.locator('[role="grid"][aria-label="Order lines"] [role="row"]:has([role="gridcell"])');
+    const row = dataRows.nth(lineIndex);
+    const vendorCell = row.locator('input[name="PurchLine_VendAccount"], input[aria-label="Vendor account"]');
+    await expect(vendorCell).toHaveValue(expectedVendor, { timeout: 10_000 });
   }
 
   /**
-   * Navigate to the linked Purchase Order from the current Sales Order.
+   * Navigate from the current SO to the linked Purchase Order.
+   * Path: Sales order tab → General → References → buttonPurchTable.
    *
-   * D Channel SOs auto-create a linked PO. After SO confirmation, this method
-   * navigates to that PO for verification.
-   *
-   * TODO: Find the SO → PO link. Possible locations:
-   *   - Lines tab → "Related orders" section
-   *   - Lines tab → right-click row → "Linked purchase order"
-   *   - Header tab → "References" FastTab
-   *
-   * @returns The PO number string (e.g. "PO000012345")
+   * @returns The PO number (e.g. "PO317685")
    */
   async navigateToLinkedPO(): Promise<string> {
-    // TODO: implement after locators are confirmed
-    // await this.linkedPOLink.click();
-    // await this.waitForProcessing();
-    // const poNumber = await this.page.locator('[id*="PurchId"]').textContent() ?? '';
-    // return poNumber.trim();
-    console.warn('⚠ DChannelOrderPage.navigateToLinkedPO() — TODO: not yet implemented');
-    throw new Error('DChannelOrderPage.navigateToLinkedPO() not yet implemented');
+    await this.safeClick(this.generalTab);
+    await this.waitForProcessing();
+    await this.safeClick(this.referencesBtn);
+    await this.waitForProcessing();
+
+    // Capture PO number before navigating
+    const poNumber = await this.purchIdField.inputValue();
+
+    // Dismiss the References dialog before opening the PO
+    await this.safeClick(this.referencesOKBtn);
+    await this.waitForProcessing();
+    await this.safeClick(this.purchTableBtn);
+    await this.waitForProcessing();
+
+    return poNumber.trim();
+  }
+
+  /**
+   * Trigger Direct Delivery from the SO to create the linked Purchase Order.
+   * Must be called after MCR Complete + Submit, while still on the SO form.
+   *
+   * Flow (from recorded podchannel session):
+   *   Sales order tab → Direct delivery → choose "No" (don't auto-confirm to vendor) → OK
+   *
+   * Scenarios 58–73, 120–123.
+   */
+  async triggerDirectDelivery(): Promise<void> {
+    await this.safeClick(this.salesOrderActionTab);
+    await this.waitForProcessing();
+    await this.safeClick(this.directDeliveryBtn);
+    await this.waitForProcessing();
+    // In the Direct delivery dialog, D365 may ask whether to send the PO to the vendor.
+    // The recorded flow selects "No" (create the PO proposal without auto-sending).
+    const noOption = this.page.locator(`:has([data-dyn-controlname="Field"] input[value="No"]) rect`);
+    if (await noOption.isVisible({ timeout: 3_000 }).catch(() => false)) {
+      await this.safeClick(noOption);
+    }
+    await this.safeClick(this.commandButtonOK);
+    await this.waitForProcessing();
   }
 
   /**
    * Verify that the PO status matches the expected value.
-   *
-   * Called while on the linked PO page (after navigateToLinkedPO()).
+   * Call after navigateToLinkedPO().
    *
    * @param expectedStatus  e.g. "Open order", "Cancelled"
    */
   async verifyPOStatus(expectedStatus: string): Promise<void> {
-    // TODO: implement after locators are confirmed
-    // await expect(this.poStatusField).toHaveValue(expectedStatus, { timeout: 5_000 });
-    console.warn('⚠ DChannelOrderPage.verifyPOStatus() — TODO: not yet implemented');
-    throw new Error('DChannelOrderPage.verifyPOStatus() not yet implemented');
+    await expect(this.poStatusField).toHaveValue(expectedStatus, { timeout: 10_000 });
   }
 
   /**
-   * Change the delivery address on the Sales Order.
+   * Change the delivery address on the Sales Order via the "Other address" button.
+   * Scenarios 120/121.
    *
-   * Scenarios 120/121: Change address on SO → verify it flows through to PO.
-   *
-   * TODO: Find the delivery address field(s) on the SO Header tab.
-   *   - Look in Header tab → "Delivery" FastTab
-   *   - May have Name + Street + City + State + Zip fields
-   *
-   * @param name     Delivery name
-   * @param street   Street address
-   * @param city     City
-   * @param state    State code
-   * @param zip      ZIP code
+   * @param addressName  The name of the address record to select
    */
-  async changeDeliveryAddress(name: string, street: string, city: string, state: string, zip: string): Promise<void> {
-    // TODO: implement after locators are confirmed
-    console.warn('⚠ DChannelOrderPage.changeDeliveryAddress() — TODO: not yet implemented');
-    throw new Error('DChannelOrderPage.changeDeliveryAddress() not yet implemented');
+  async changeDeliveryAddress(addressName: string): Promise<void> {
+    await this.safeClick(this.page.locator(`[data-dyn-controlname="MCRLogisticsLocationSelectHeader1"]`));
+    await this.waitForProcessing();
+    // Search and select the address by name
+    const searchInput = this.page.locator(`input[aria-label="Name"], input[placeholder*="Name"]`).first();
+    await this.safeFill(searchInput, addressName);
+    await searchInput.press('Enter');
+    await this.waitForProcessing();
+    await this.safeClick(this.page.locator(`[data-dyn-controlname="SystemDefinedOKButton"], [data-dyn-controlname="OK"][name="OK"]`).first());
+    await this.waitForProcessing();
   }
 
   /**
-   * Verify that the delivery address on the linked PO matches the expected values.
-   *
-   * Scenarios 120/121: After changing SO address, verify PO address updated too.
-   * Should match both address and address name fields.
-   *
-   * TODO: Navigate to linked PO first, then inspect delivery address fields.
+   * Verify the delivery address on the linked PO contains the expected text.
+   * Scenarios 120/121.
    */
   async verifyPODeliveryAddress(expectedName: string, expectedStreet: string): Promise<void> {
-    // TODO: implement after locators are confirmed
-    // await expect(this.poDeliveryNameInput).toHaveValue(expectedName, { timeout: 5_000 });
-    // await expect(this.poDeliveryAddressInput).toContainText(expectedStreet, { timeout: 5_000 });
-    console.warn('⚠ DChannelOrderPage.verifyPODeliveryAddress() — TODO: not yet implemented');
-    throw new Error('DChannelOrderPage.verifyPODeliveryAddress() not yet implemented');
+    const nameField = this.page.locator(`input[name="SalesTable_DeliveryName1"], input[aria-label="Name"]`).first();
+    await expect(nameField).toHaveValue(new RegExp(expectedName, 'i'), { timeout: 10_000 });
+    const addrField = this.page.locator(`textarea[aria-label="Address"], input[aria-label="Street"]`).first();
+    await expect(addrField).toContainText(expectedStreet, { timeout: 10_000 });
   }
 
   /**
-   * Update the quantity on a specific SO line.
-   *
-   * Scenario 67: Change quantity on Scenario 59's order.
-   *
-   * @param lineIndex  0-based row index
-   * @param newQty     New quantity string (e.g. "5")
+   * Update the quantity on a specific SO line (0-based index).
+   * Scenario 67.
    */
   async updateLineQuantity(lineIndex: number, newQty: string): Promise<void> {
-    // TODO: implement after locators are confirmed
-    // const dataRows = this.page.locator('[role="grid"][aria-label="Order lines"] [role="row"]:has([role="gridcell"])');
-    // const qtyCell = dataRows.nth(lineIndex).locator('input[name="SalesQty"]'); // confirm name attr
-    // await qtyCell.dblclick();
-    // await qtyCell.fill(newQty);
-    // await qtyCell.press('Tab');
-    // await this.waitForProcessing();
-    console.warn('⚠ DChannelOrderPage.updateLineQuantity() — TODO: not yet implemented');
-    throw new Error('DChannelOrderPage.updateLineQuantity() not yet implemented');
+    const dataRows = this.page.locator('[role="grid"][aria-label="Order lines"] [role="row"]:has([role="gridcell"])');
+    const qtyCell = dataRows.nth(lineIndex).locator('input[aria-label="Quantity"]');
+    await qtyCell.dblclick();
+    await qtyCell.fill(newQty);
+    await qtyCell.press('Tab');
+    await this.waitForProcessing();
   }
 
   /**
-   * Update the unit price on a specific SO line.
-   *
-   * Scenario 68: Update price on Scenario 59's order.
-   *
-   * @param lineIndex  0-based row index
-   * @param newPrice   New price string (e.g. "350.00")
+   * Update the unit price on a specific SO line (0-based index).
+   * Scenario 68.
    */
   async updateLinePrice(lineIndex: number, newPrice: string): Promise<void> {
-    // TODO: implement — similar to PricingPage.overrideLinePrice()
-    console.warn('⚠ DChannelOrderPage.updateLinePrice() — TODO: not yet implemented');
-    throw new Error('DChannelOrderPage.updateLinePrice() not yet implemented');
+    const dataRows = this.page.locator('[role="grid"][aria-label="Order lines"] [role="row"]:has([role="gridcell"])');
+    const priceCell = dataRows.nth(lineIndex).locator('input[aria-label="Unit price"]');
+    await priceCell.dblclick();
+    await priceCell.fill(newPrice);
+    await priceCell.press('Tab');
+    await this.waitForProcessing();
   }
 
   /**
-   * Add a new order line to an existing D Channel SO (after PO has been created).
-   *
-   * Scenarios 69/70: Add SO line after the PO has already been created.
-   *
-   * TODO: Same as SalesOrderPage.enterItemNumber() — try using that method.
-   * Note: adding a line after PO creation may trigger a dialog asking about
-   * updating the linked PO. Handle that dialog if it appears.
+   * Add a new order line item to the SO.
+   * Scenarios 69/70: adding a line after the PO has been created.
+   * Handles the "Update purchase order?" dialog if it appears.
    *
    * @param itemNumber  Item number to add
    */
   async addOrderLine(itemNumber: string): Promise<void> {
-    // TODO: implement — may reuse enterItemNumber() from SalesOrderPage
-    // Watch for a "Update purchase order?" dialog after adding the line
-    console.warn('⚠ DChannelOrderPage.addOrderLine() — TODO: not yet implemented');
-    throw new Error('DChannelOrderPage.addOrderLine() not yet implemented');
+    await this.safeClick(this.addLineBtn);
+    await this.waitForProcessing();
+    await this.safeFill(this.itemIdInput, itemNumber);
+    await this.itemIdInput.press('Tab');
+    await this.waitForProcessing();
+    // Handle optional "Update linked PO?" dialog
+    const updateDialog = this.page.locator(`[data-dyn-controlname="Yes"][name="Yes"]`);
+    if (await updateDialog.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      await this.safeClick(updateDialog);
+      await this.waitForProcessing();
+    }
   }
 
   /**
-   * Apply a deposit to the order.
+   * Apply a deposit via the MCR Complete flow.
+   * Scenarios 71/72.
    *
-   * Scenarios 71/72: Apply deposit from Scenario 58/59.
-   *
-   * TODO: Find where deposits are managed — check the MCR Order Recap dialog
-   * (Complete button flow) or a dedicated "Deposit" button on the SO Action Pane.
-   *
-   * @param amount  Deposit amount string (e.g. "500.00")
+   * @param tenderType   Tender type code (e.g. "CHECK", "WIRE")
+   * @param amount       Deposit amount string (e.g. "500.00")
    */
-  async applyDeposit(amount: string): Promise<void> {
-    // TODO: implement after locators are confirmed
-    console.warn('⚠ DChannelOrderPage.applyDeposit() — TODO: not yet implemented');
-    throw new Error('DChannelOrderPage.applyDeposit() not yet implemented');
+  async applyDeposit(tenderType: string, amount: string): Promise<void> {
+    await this.safeClick(this.completeBtn);
+    await this.waitForProcessing();
+    // Confirm the "Confirm order?" dialog that appears after clicking Complete
+    await this.safeClick(this.confirmYesBtn);
+    await this.waitForProcessing();
+    await this.safeClick(this.addDepositBtn);
+    await this.waitForProcessing();
+    await this.safeFill(this.tenderTypeInput, tenderType);
+    await this.tenderTypeInput.press('Tab');
+    const amtInput = this.page.locator(`input[name="MCRCustPaym_Amount"], input[aria-label="Amount"]`).last();
+    await this.safeFill(amtInput, amount);
+    await amtInput.press('Tab');
+    await this.safeClick(this.mcrOKBtn);
+    await this.waitForProcessing();
+    await this.safeClick(this.submitBtn);
+    await this.waitForProcessing();
   }
 
   /**
    * Cancel the entire Sales Order.
-   *
-   * Scenarios 73/75: Cancel D Channel SO → verify allocations release and PO cancels.
-   *
-   * TODO: Find the cancel button/option. Options:
-   *   - Action Pane → "Maintain" tab → Cancel button
-   *   - Or set order status to "Cancelled"
-   *   - May show a confirmation dialog
+   * Scenarios 73/75.
    */
   async cancelOrder(): Promise<void> {
-    // TODO: implement after locators are confirmed
-    // await this.cancelOrderBtn.click();
-    // Handle confirmation dialog if present
-    // await this.page.getByRole('button', { name: 'Yes' }).click();
-    // await this.waitForProcessing();
-    console.warn('⚠ DChannelOrderPage.cancelOrder() — TODO: not yet implemented');
-    throw new Error('DChannelOrderPage.cancelOrder() not yet implemented');
+    await this.safeClick(this.cancelOrderBtn);
+    await this.waitForProcessing();
+    // Confirm cancellation dialog if present
+    const yesBtn = this.page.locator(`[data-dyn-controlname="Yes"][name="Yes"]`);
+    if (await yesBtn.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      await this.safeClick(yesBtn);
+      await this.waitForProcessing();
+    }
+    // Handle reason code dialog if present
+    const okBtn = this.page.locator(`[data-dyn-controlname="OK"][name="OK"]`);
+    if (await okBtn.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      await this.safeClick(okBtn);
+      await this.waitForProcessing();
+    }
   }
 
   /**
-   * Cancel a specific line on the Sales Order.
-   *
-   * Scenario 74: Cancel one line from Scenario 69's order.
+   * Cancel a specific line on the SO.
+   * Scenario 74.
    *
    * @param lineIndex  0-based row index to cancel
    */
   async cancelOrderLine(lineIndex: number): Promise<void> {
-    // TODO: implement — may be right-click → Cancel line, or a status field change
-    console.warn('⚠ DChannelOrderPage.cancelOrderLine() — TODO: not yet implemented');
-    throw new Error('DChannelOrderPage.cancelOrderLine() not yet implemented');
+    const dataRows = this.page.locator('[role="grid"][aria-label="Order lines"] [role="row"]:has([role="gridcell"])');
+    await dataRows.nth(lineIndex).locator('[role="gridcell"]').first().click();
+    await this.waitForProcessing();
+    await this.safeClick(this.cancelLinesBtn);
+    await this.waitForProcessing();
+    const yesBtn = this.page.locator(`[data-dyn-controlname="Yes"][name="Yes"]`);
+    if (await yesBtn.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      await this.safeClick(yesBtn);
+      await this.waitForProcessing();
+    }
   }
 
   /**
-   * Verify that no allocations/reservations remain on the specified line.
-   *
-   * Scenarios 73–75: "Ensure allocations do not stick."
+   * Verify that no physical allocations remain on the specified SO line.
+   * Scenarios 73–75: navigate Inventory → Reservation and check qty = 0.
    *
    * @param lineIndex  0-based row index to check
    */
   async verifyNoAllocationsOnLine(lineIndex: number): Promise<void> {
-    // TODO: implement — check Inventory → Reservation for this line
-    // ALCPhysicallyAllocated should be 0 after cancellation
-    console.warn('⚠ DChannelOrderPage.verifyNoAllocationsOnLine() — TODO: not yet implemented');
-    throw new Error('DChannelOrderPage.verifyNoAllocationsOnLine() not yet implemented');
+    const dataRows = this.page.locator('[role="grid"][aria-label="Order lines"] [role="row"]:has([role="gridcell"])');
+    await dataRows.nth(lineIndex).locator('[role="gridcell"]').first().click();
+    // Open Inventory → Reservation for the line
+    await this.safeClick(this.page.locator(`[data-dyn-controlname="ButtonLineInventory"]`));
+    await this.waitForProcessing();
+    const reservationBtn = this.page.locator(`[data-dyn-controlname="InventoryReservation"], button:has-text("Reservation")`).first();
+    await this.safeClick(reservationBtn);
+    await this.waitForProcessing();
+    // Check that physically reserved quantity shows 0
+    const reservedQty = this.page.locator(`input[name="InventTrans_ReservPhysical"], input[aria-label="Physical reservation"]`).first();
+    await expect(reservedQty).toHaveValue('0.00', { timeout: 10_000 });
+    await this.page.keyboard.press('Escape');
+    await this.waitForProcessing();
   }
 
   /**
-   * Post the packing slip for a D Channel order upon delivery confirmation.
-   *
-   * Scenario 66: Post packing slip upon confirmation of delivery of goods.
-   *
-   * TODO: This is likely the same as ShipmentsPage.postPackingSlip()
-   * but triggered from the SO form rather than the Shipments page.
+   * Post the packing slip (product receipt) for a D Channel order.
+   * Scenario 66: confirmation of delivery of goods.
    */
   async postPackingSlip(): Promise<void> {
-    // TODO: May reuse ShipmentsPage.postPackingSlip() if buttons are same on SO form
-    // Otherwise add specific locators here
-    console.warn('⚠ DChannelOrderPage.postPackingSlip() — TODO: not yet implemented');
-    throw new Error('DChannelOrderPage.postPackingSlip() not yet implemented');
+    // Pick and pack → Generate → Packing slip
+    await this.safeClick(this.page.locator(`button[name="Pick and pack"]`));
+    await this.waitForProcessing();
+    const packingSlipBtn = this.page.locator(`button:has-text("Packing slip"), [data-dyn-controlname="WMSPickingRoute_PackingSlip"]`).first();
+    await this.safeClick(packingSlipBtn);
+    await this.waitForProcessing();
+    await this.safeClick(this.page.locator(`[data-dyn-controlname="OK"][name="OK"]`));
+    await this.waitForProcessing();
   }
 }

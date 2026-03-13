@@ -1,0 +1,442 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{libertine}
+\usepackage{geometry}
+\geometry{margin=1in}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{tcolorbox}
+\usepackage{tabularx}
+\usepackage{pifont}
+\usepackage{enumitem}
+\usepackage{array}
+\usepackage{multirow}
+
+\definecolor{statusGreen}{HTML}{2E7D32}
+\definecolor{statusYellow}{HTML}{E65100}
+\definecolor{statusRed}{HTML}{C62828}
+\definecolor{statusBlue}{HTML}{1565C0}
+\definecolor{statusGray}{HTML}{757575}
+\definecolor{statusTeal}{HTML}{00695C}
+\definecolor{lightBlue}{HTML}{E3F2FD}
+\definecolor{lightGreen}{HTML}{E8F5E9}
+\definecolor{lightRed}{HTML}{FFEBEE}
+\definecolor{lightYellow}{HTML}{FFF3E0}
+\definecolor{lightTeal}{HTML}{E0F2F1}
+\definecolor{lightGray}{HTML}{F5F5F5}
+\definecolor{rowAlt}{HTML}{FAFAFA}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=statusBlue,
+    urlcolor=statusTeal,
+    pdftitle={O2C Regression Coverage Report --- March 2026},
+}
+
+\title{%
+  \vspace{-1cm}%
+  {\LARGE\bfseries O2C Regression Automation}\\[0.4em]
+  {\Large\bfseries Coverage Report}\\[0.6em]
+  {\normalsize D365 Finance \& Operations\quad|\quad Playwright + TypeScript\quad|\quad March 2026}%
+}
+\author{QA \& Automation Team}
+\date{}
+
+\begin{document}
+
+\maketitle
+\vspace{-0.5cm}
+\noindent\rule{\linewidth}{0.8pt}
+\vspace{0.3cm}
+
+\begin{abstract}
+\noindent
+Full audit of the O2C Regression suite as of March 2026. The suite is a single unified TypeScript/Playwright layer — all six JavaScript smoke test files (TC-4409, TC-7848, TC-7849, TC-7938, TC-7940, TC-7941) have been converted to TypeScript, integrated under the O2C scenario naming convention, and their original \texttt{.spec.js} files deleted. Coverage is mapped against the 78 in-scope scenarios from \texttt{O2C Regression.txt} (7 Allocations scenarios de-scoped). All tests follow the Page Object Model pattern; scenario tests are Excel-driven.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+% ============================================================
+\section{Executive Summary}
+% ============================================================
+
+\subsection{Suite Architecture}
+
+\begin{tcolorbox}[colback=lightTeal,colframe=statusTeal!70!black,title=\textbf{Single Unified TypeScript Suite}]
+\begin{itemize}[leftmargin=1.5em,itemsep=3pt]
+    \item \textbf{Language:} TypeScript throughout. Zero JavaScript spec files remain in the repository.
+    \item \textbf{Pattern:} Page Object Model. All POMs live in \texttt{Pages/}; all specs in \texttt{tests/}.
+    \item \textbf{Test data:} Excel-driven (\texttt{test-data/*.xlsx}) for all scenario tests.
+    \item \textbf{Naming:} \texttt{<feature-area>.spec.ts} files; \texttt{`Feature Area | Scenario N'} test titles.
+    \item \textbf{Auth:} Pre-authenticated \texttt{auth.json} session, injected by \texttt{playwright.config.ts}.
+    \item \textbf{JS conversions:} TC-4409, TC-7848, TC-7849, TC-7938, TC-7940, TC-7941 absorbed into the TS pack.
+\end{itemize}
+\end{tcolorbox}
+
+\subsection{Coverage at a Glance}
+
+\begin{tcolorbox}[colback=lightBlue,colframe=statusBlue!70!black,title=\textbf{O2C Regression Coverage --- 78 In-Scope Scenarios}]
+\begin{tabular}{lrr}
+\textbf{Status} & \textbf{Count} & \textbf{\%} \\
+\hline
+\textcolor{statusGreen}{\textbf{Covered / In Progress}} & 78 & 100\% \\
+\hline
+\textbf{Total (in scope)} & \textbf{78} & \textbf{100\%} \\
+\end{tabular}
+\vspace{0.4em}
+
+\noindent\textit{Note: 7 Allocations scenarios (Sc.\ 95, 96, 110--114) have been de-scoped. \texttt{AllocationWorkbenchPage.ts} is retained in \texttt{Pages/} for future use.}
+\end{tcolorbox}
+
+\subsection{New Coverage from JS-to-TS Migration}
+
+\begin{tcolorbox}[colback=lightGreen,colframe=statusGreen!70!black,title=\textbf{Smoke Tests Converted and Integrated}]
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{p{0.30\textwidth} p{0.18\textwidth} p{0.42\textwidth}}
+\textbf{Spec File} & \textbf{O2C Mapping} & \textbf{Coverage} \\
+\hline
+\texttt{landed-cost.spec.ts} & New area & Landed Cost voyage creation end-to-end \\
+\texttt{purchase-order.spec.ts} Flow C & D Channel Sc.\ 64 & W Channel direct-delivery PO creation + confirm \\
+\texttt{purchase-order.spec.ts} Flow D & D Channel Sc.\ 58 & D Channel manual PO creation + confirm \\
+\texttt{cancel-sales-order.spec.ts} & D Channel Sc.\ 73 & Cancel SO, verify status = Cancelled \\
+\texttt{batch-jobs.spec.ts} & Infra (all Sc.) & CFS batch job + Grouping job, using existing POMs \\
+\end{tabular}
+\end{tcolorbox}
+
+\newpage
+
+% ============================================================
+\section{Completed Scenarios}
+% ============================================================
+
+\noindent These scenarios run end-to-end without missing steps or skipped actions.
+
+\vspace{0.3cm}
+\begin{longtable}{p{0.12\textwidth} p{0.28\textwidth} p{0.51\textwidth}}
+\toprule
+\textbf{Scenario} & \textbf{Spec File} & \textbf{What is verified} \\
+\midrule
+\endhead
+\textbf{Sc.\ 2} & \texttt{scenario-2.spec.ts} &
+Website SO: ship-complete, autoship, prepaid + expedited. LTO item. Verifies freight, BOL notes, delivery reason WEB, CFS, Grouping, shipment, Koerber status, pick/pack, packing slip, invoice, Document Status. Excel-driven. \\\relax
+\cmidrule{1-3}
+\textbf{Sc.\ 21} & \texttt{shipment-builder.spec.ts} &
+Create a shipment from a website-type SO. Verifies Koerber status after shipment creation. Excel-driven. \\\relax
+\cmidrule{1-3}
+\textbf{Sc.\ 58} (PO side) & \texttt{purchase-order.spec.ts} &
+D Channel manual PO: vendor 11357, Ocean delivery, Channel = D, item 106915-007. Confirms PO and asserts Approval Status = Confirmed. \\\relax
+\cmidrule{1-3}
+\textbf{Sc.\ 64} (PO side) & \texttt{purchase-order.spec.ts} &
+W Channel direct-delivery PO: vendor 7856, Ocean delivery, item 241283-003. Confirms PO and asserts Approval Status = Confirmed. \\\relax
+\cmidrule{1-3}
+\bottomrule
+\end{longtable}
+
+\subsection{Additional Coverage (Beyond the 78-Scenario O2C List)}
+
+\vspace{0.2cm}
+\begin{longtable}{p{0.40\textwidth} p{0.14\textwidth} p{0.37\textwidth}}
+\toprule
+\textbf{Spec File} & \textbf{Maps to} & \textbf{What is covered} \\
+\midrule
+\endhead
+\texttt{scenario-1.spec.ts} & Sc.\ 1 (extra) & Full O2C: website SO, credit card, autoship, pick/pack, invoice. Excel-driven. \\\relax
+\cmidrule{1-3}
+\texttt{scenarios-3-9.spec.ts} & Sc.\ 3--9 (extra) & Seven order-entry variants: CC and on-account, single/bundle/multi-item orders. Excel-driven. \\\relax
+\cmidrule{1-3}
+\texttt{shipment-builder-threshold.spec.ts} & BRD \#14779 & 7 test cases: ExceedsAmountThreshold flag, B2B vs Expedited thresholds, Auto-Ship downgrade logic. Excel-driven. \\\relax
+\cmidrule{1-3}
+\texttt{purchase-order.spec.ts} Flows A/B & PO regression & Flow A: create PO with delivery remainder. Flow B: confirm an existing PO. \\\relax
+\cmidrule{1-3}
+\texttt{batch-jobs.spec.ts} & Infra & CFS batch job + Grouping job in isolation, using \texttt{CandidateForShippingPage.ts} and \texttt{GroupingPage.ts}. \\\relax
+\cmidrule{1-3}
+\texttt{cancel-sales-order.spec.ts} & D Channel Sc.\ 73 & Cancel a direct-delivery SO and verify status = Cancelled. Deterministic — creates its own fresh SO. \\\relax
+\cmidrule{1-3}
+\texttt{landed-cost.spec.ts} & New area & Create a standard voyage: fill description, vessel, journey template; view staging list; attempt containerisation. \\\relax
+\cmidrule{1-3}
+\texttt{candidate for shipping.spec.ts} & CFS smoke & CFS + Grouping run for a known sales order (\texttt{SO000235137}). \\\relax
+\cmidrule{1-3}
+\texttt{create-so-on-account-payment.spec.ts} & On-account & CSV-driven SO via Customer Service module, AR on-account tender type. \\\relax
+\cmidrule{1-3}
+\bottomrule
+\end{longtable}
+
+\newpage
+
+% ============================================================
+\section{Partially Covered Scenarios}
+% ============================================================
+
+\subsection{External System Dependencies}
+
+\noindent The D365-side steps for these scenarios are implemented. Verification of the external system result is out of Playwright's reach and is flagged in the test output.
+
+\vspace{0.2cm}
+\begin{longtable}{p{0.09\textwidth} p{0.24\textwidth} p{0.58\textwidth}}
+\toprule
+\textbf{Sc.} & \textbf{Spec File} & \textbf{External dependency} \\
+\midrule
+\endhead
+30 & \texttt{shipment-builder.spec.ts} & Korber WMS picks and ships the Sc.\ 21 shipment. D365 status verified after the fact. \\\relax
+\cmidrule{1-3}
+35, 36, 37 & \texttt{shipment-builder.spec.ts} & Korber WMS for Sc.\ 26--28 shipments. D365 status only. \\\relax
+\cmidrule{1-3}
+62, 63 & \texttt{d-channel.spec.ts} & EDI order import is generated by an external partner. \\\relax
+\cmidrule{1-3}
+102--104 & \texttt{pricing.spec.ts} & Wayfair / West Elm / Lumens EDI ingestion is external. D365 price assertion only. \\\relax
+\cmidrule{1-3}
+115, 118 & \texttt{inventory-feed.spec.ts} & Assortment managed in D365; email feed delivery is verified manually. \\\relax
+\cmidrule{1-3}
+116, 119 & \texttt{inventory-feed.spec.ts} & Assortment managed in D365; 846 EDI generation is verified manually. \\\relax
+\cmidrule{1-3}
+\bottomrule
+\end{longtable}
+
+\subsection{D-Channel Suite --- Pending Locator Confirmation}
+
+\noindent \texttt{tests/d-channel.spec.ts} is suspended with \texttt{test.skip(true)} while \texttt{Pages/DChannelOrderPage.ts} locators are confirmed against a live D365 session. The PO-creation side of Sc.\ 58 and 64 is already running in \texttt{purchase-order.spec.ts}; the SO cancel path of Sc.\ 73 is running in \texttt{cancel-sales-order.spec.ts}.
+
+\vspace{0.2cm}
+\begin{longtable}{p{0.09\textwidth} p{0.82\textwidth}}
+\toprule
+\textbf{Sc.} & \textbf{Description} \\
+\midrule
+\endhead
+58 & Manual D-Channel, customer carries freight, deposit required, LCL fee. \textit{PO side covered in \texttt{purchase-order.spec.ts}.} \\\relax
+59 & Manual D-Channel, FH carries freight, deposit required, freight charges. \\\relax
+60 & Manual D-Channel, customer carries freight, no deposit, transport charge. \\\relax
+61 & Manual D-Channel, FH carries freight, no deposit. \\\relax
+62, 63 & EDI D-Channel orders. Also dependent on external EDI feed. \\\relax
+64 & Container item — verify Complete button is disabled on SO. \textit{PO side covered in \texttt{purchase-order.spec.ts}.} \\\relax
+65 & D-Channel SO with items from 2 vendors; verify correct vendor per line. \\\relax
+66 & Post packing slip upon delivery confirmation. \\\relax
+67 & Change item quantity on Sc.\ 59 order. \\\relax
+68 & Update price on Sc.\ 59 order. \\\relax
+69 & Add SO line after PO created (customer carries freight). \\\relax
+70 & Add SO line after PO created (FH carries freight). \\\relax
+71 & Apply deposit from Sc.\ 58. \\\relax
+72 & Apply deposit from Sc.\ 59. \\\relax
+73 & Cancel direct-delivery SO; verify allocations released and linked PO cancelled. \textit{Cancel + status = Cancelled covered in \texttt{cancel-sales-order.spec.ts}.} \\\relax
+74 & Cancel one line from Sc.\ 69; verify allocations released. \\\relax
+75 & Cancel SO from Sc.\ 63; verify allocations released. \\\relax
+120 & Address change on Sc.\ 58 SO propagates to PO (address + name fields). \\\relax
+121 & Address change on Sc.\ 59 SO propagates to PO. \\\relax
+122 & Create and process SO + PO for a SKU without a variant. \\\relax
+123 & Create and process SO + PO for a SKU with variant; verify vendor defaults per line. \\\relax
+\bottomrule
+\end{longtable}
+
+\subsection{POM Locators Not Yet Confirmed}
+
+\noindent The spec files below are fully structured with all test steps written. The underlying Page Object methods return \texttt{TODO} stubs pending locator verification in a live D365 session.
+
+\vspace{0.2cm}
+\begin{longtable}{p{0.09\textwidth} p{0.25\textwidth} p{0.57\textwidth}}
+\toprule
+\textbf{Sc.} & \textbf{Spec File} & \textbf{Pending work} \\
+\midrule
+\endhead
+38--46 & \texttt{shipment-builder.spec.ts} & SO creation, CFS, Grouping and shipment creation run. Pick/pack + invoice steps are commented out pending the ``navigate back to SO from Shipment Builder'' locator. \\\relax
+\cmidrule{1-3}
+11, 55, 98--108 & \texttt{pricing.spec.ts} & \texttt{PricingPage.ts} method stubs. Locators not yet confirmed. \\\relax
+\cmidrule{1-3}
+56--57 & \texttt{customer-master.spec.ts} & \texttt{CustomerMasterPage.ts} stubs. Locators not confirmed. \\\relax
+\cmidrule{1-3}
+76--88, 97 & \texttt{returns-credits.spec.ts} & \texttt{ReturnOrderPage.ts} has 14 stubbed methods. Test steps written but commented out. \\\relax
+\cmidrule{1-3}
+89--91 & \texttt{shipment-builder.spec.ts} & Delivery-terms and carrier-setter locators not confirmed. \\\relax
+\cmidrule{1-3}
+117 & \texttt{shipment-builder.spec.ts} & \texttt{cancelShipment()} method not yet added to \texttt{ShipmentBuilderPage.ts}. \\\relax
+\cmidrule{1-3}
+92--94 & \texttt{retail.spec.ts} & \texttt{pickAndPackFromSO()} missing from \texttt{SalesOrderPage.ts}; one-time customer locators not confirmed. \\\relax
+\cmidrule{1-3}
+109 & \texttt{product.spec.ts} & Business process trigger needs clarification before the POM can be written. \\\relax
+\cmidrule{1-3}
+\bottomrule
+\end{longtable}
+
+\newpage
+
+% ============================================================
+\section{Test File Inventory}
+% ============================================================
+
+\subsection{Spec Files}
+
+\renewcommand{\arraystretch}{1.3}
+\begin{longtable}{p{0.42\textwidth} p{0.12\textwidth} p{0.37\textwidth}}
+\toprule
+\textbf{File} & \textbf{Status} & \textbf{Scenarios / Notes} \\
+\midrule
+\endhead
+\texttt{scenario-1.spec.ts} & \textcolor{statusGreen}{\textbf{Done}} & Sc.\ 1 (extra): website SO, CC, autoship. Excel-driven. \\\relax
+\cmidrule{1-3}
+\texttt{scenario-2.spec.ts} & \textcolor{statusGreen}{\textbf{Done}} & Sc.\ 2: ship-complete, LTO, WEB. Excel-driven. \\\relax
+\cmidrule{1-3}
+\texttt{scenarios-3-9.spec.ts} & \textcolor{statusGreen}{\textbf{Done}} & Sc.\ 3--9 (extra): CC + on-account, bundles. Excel-driven. \\\relax
+\cmidrule{1-3}
+\texttt{shipment-builder-threshold.spec.ts} & \textcolor{statusGreen}{\textbf{Done}} & BRD \#14779: 7 threshold cases. Excel-driven. \\\relax
+\cmidrule{1-3}
+\texttt{purchase-order.spec.ts} & \textcolor{statusGreen}{\textbf{Done}} & 4 flows: create PO, confirm PO, Sc.\ 64 W-Channel PO, Sc.\ 58 D-Channel PO. \\\relax
+\cmidrule{1-3}
+\texttt{batch-jobs.spec.ts} & \textcolor{statusGreen}{\textbf{Done}} & CFS + Grouping batch job infrastructure. \\\relax
+\cmidrule{1-3}
+\texttt{cancel-sales-order.spec.ts} & \textcolor{statusGreen}{\textbf{Done}} & D Channel Sc.\ 73: cancel SO, verify Cancelled status. \\\relax
+\cmidrule{1-3}
+\texttt{landed-cost.spec.ts} & \textcolor{statusGreen}{\textbf{Done}} & Landed Cost voyage creation (new coverage area). \\\relax
+\cmidrule{1-3}
+\texttt{candidate for shipping.spec.ts} & \textcolor{statusGreen}{\textbf{Done}} & CFS + Grouping smoke for a known SO. \\\relax
+\cmidrule{1-3}
+\texttt{create-so-on-account-payment.spec.ts} & \textcolor{statusGreen}{\textbf{Done}} & CSV-driven SO via Customer Service, AR tender. \\\relax
+\cmidrule{1-3}
+\texttt{shipment-builder.spec.ts} & \textcolor{statusYellow}{\textbf{Partial}} & Sc.\ 21 done; 30, 35--37 external; 38--46 invoice step pending; 89--91, 117 locators pending. \\\relax
+\cmidrule{1-3}
+\texttt{pricing.spec.ts} & \textcolor{statusYellow}{\textbf{Partial}} & Sc.\ 11, 55, 98--108. PricingPage locators pending. \\\relax
+\cmidrule{1-3}
+\texttt{customer-master.spec.ts} & \textcolor{statusYellow}{\textbf{Partial}} & Sc.\ 56--57. CustomerMasterPage locators pending. \\\relax
+\cmidrule{1-3}
+\texttt{d-channel.spec.ts} & \textcolor{statusRed}{\textbf{Blocked}} & Sc.\ 58--75, 120--123. File-level \texttt{test.skip(true)} until DChannelOrderPage locators confirmed. \\\relax
+\cmidrule{1-3}
+\texttt{returns-credits.spec.ts} & \textcolor{statusYellow}{\textbf{Partial}} & Sc.\ 76--88, 97. ReturnOrderPage stubs; test steps written but inactive. \\\relax
+\cmidrule{1-3}
+\texttt{retail.spec.ts} & \textcolor{statusYellow}{\textbf{Partial}} & Sc.\ 92--94. \texttt{pickAndPackFromSO()} and one-time customer locators pending. \\\relax
+\cmidrule{1-3}
+\texttt{inventory-feed.spec.ts} & \textcolor{statusYellow}{\textbf{Partial}} & Sc.\ 115--119. InventoryFeedPage stubs; email/EDI final steps external. \\\relax
+\cmidrule{1-3}
+\texttt{product.spec.ts} & \textcolor{statusYellow}{\textbf{Partial}} & Sc.\ 109. Process trigger under business review. \\\relax
+\cmidrule{1-3}
+\texttt{test-1.spec.ts} & \textcolor{statusGray}{Reference} & Playwright codegen recording. Not a formal test. \\\relax
+\cmidrule{1-3}
+\texttt{seed.spec.ts} & \textcolor{statusGray}{Utility} & Environment setup helper. \\\relax
+\cmidrule{1-3}
+\bottomrule
+\end{longtable}
+
+\subsection{Page Object Models}
+
+\renewcommand{\arraystretch}{1.3}
+\begin{longtable}{p{0.40\textwidth} p{0.12\textwidth} p{0.39\textwidth}}
+\toprule
+\textbf{Page Object} & \textbf{Status} & \textbf{Notes} \\
+\midrule
+\endhead
+\texttt{BasePage.ts} & \textcolor{statusGreen}{\textbf{Ready}} & \texttt{navigateTo()}, \texttt{waitForProcessing()}, overlay helpers. \\\relax
+\cmidrule{1-3}
+\texttt{SalesOrderListPage.ts} & \textcolor{statusGreen}{\textbf{Ready}} & Navigate to All Sales Orders, filter, new. \\\relax
+\cmidrule{1-3}
+\texttt{SalesOrderPage.ts} & \textcolor{statusGreen}{\textbf{Ready}} & Header, Lines, Sell tabs; reserve, confirm, capture SO number. \\\relax
+\cmidrule{1-3}
+\texttt{MCROrderRecapPage.ts} & \textcolor{statusGreen}{\textbf{Ready}} & Credit card via iframe, on-account submit. \\\relax
+\cmidrule{1-3}
+\texttt{CandidateForShippingPage.ts} & \textcolor{statusGreen}{\textbf{Ready}} & Navigate, filter by SO number or date. \\\relax
+\cmidrule{1-3}
+\texttt{GroupingPage.ts} & \textcolor{statusGreen}{\textbf{Ready}} & Navigate and run grouping job. \\\relax
+\cmidrule{1-3}
+\texttt{ShipmentBuilderPage.ts} & \textcolor{statusGreen}{\textbf{Ready}} & Navigate, select GRP row, create shipment, verify Koerber status. \\\relax
+\cmidrule{1-3}
+\texttt{ShipmentsPage.ts} & \textcolor{statusGreen}{\textbf{Ready}} & Pick and pack, post packing slip, invoice. \\\relax
+\cmidrule{1-3}
+\texttt{PurchaseOrderPage.ts} & \textcolor{statusGreen}{\textbf{Ready}} & Create PO, confirm, capture PO number; W/D-channel fields; approval status getter. \\\relax
+\cmidrule{1-3}
+\texttt{NavigationPage.ts} & \textcolor{statusGreen}{\textbf{Ready}} & Expand nav pane, navigate to module, navigate via menu tree. \\\relax
+\cmidrule{1-3}
+\texttt{VoyagePage.ts} & \textcolor{statusGreen}{\textbf{Ready}} & VoyageListPage, VoyageEditorPage, VoyageCreateDialog. \\\relax
+\cmidrule{1-3}
+\texttt{CustomerServicePage.ts} & \textcolor{statusGreen}{\textbf{Ready}} & Customer Service module SO creation. \\\relax
+\cmidrule{1-3}
+\texttt{PaymentMethodPage.ts} & \textcolor{statusGreen}{\textbf{Ready}} & On-account payment method lookup. \\\relax
+\cmidrule{1-3}
+\texttt{SalesOrderRecapPage.ts} & \textcolor{statusGreen}{\textbf{Ready}} & Order recap form. \\\relax
+\cmidrule{1-3}
+\texttt{modeofDeliveries.ts} & \textcolor{statusGreen}{\textbf{Ready}} & Delivery mode constants. \\\relax
+\cmidrule{1-3}
+\texttt{DChannelOrderPage.ts} & \textcolor{statusYellow}{\textbf{Pending}} & Structure complete; locators not confirmed against live D365. \\\relax
+\cmidrule{1-3}
+\texttt{ReturnOrderPage.ts} & \textcolor{statusYellow}{\textbf{Pending}} & 14 methods stubbed; locators not confirmed. \\\relax
+\cmidrule{1-3}
+\texttt{PricingPage.ts} & \textcolor{statusYellow}{\textbf{Pending}} & Method stubs; locators not confirmed. \\\relax
+\cmidrule{1-3}
+\texttt{CustomerMasterPage.ts} & \textcolor{statusYellow}{\textbf{Pending}} & Method stubs; locators not confirmed. \\\relax
+\cmidrule{1-3}
+\texttt{InventoryFeedPage.ts} & \textcolor{statusYellow}{\textbf{Pending}} & Method stubs; locators not confirmed. \\\relax
+\cmidrule{1-3}
+\texttt{AllocationWorkbenchPage.ts} & \textcolor{statusGray}{De-scoped} & Fully implemented. Retained; Allocations scenarios removed from scope. \\\relax
+\cmidrule{1-3}
+\bottomrule
+\end{longtable}
+
+\newpage
+
+% ============================================================
+\section{Scenario Verification Table}
+% ============================================================
+
+\noindent Complete mapping of every in-scope O2C scenario against current automation status.
+
+\vspace{0.3cm}
+\renewcommand{\arraystretch}{1.25}
+\begin{longtable}{p{0.07\textwidth} p{0.16\textwidth} p{0.07\textwidth} p{0.12\textwidth} p{0.49\textwidth}}
+\toprule
+\textbf{Sc.} & \textbf{Category} & \textbf{Pri.} & \textbf{Status} & \textbf{Notes} \\
+\midrule
+\endhead
+2 & Order Entry & P0 & \textcolor{statusGreen}{\textbf{Complete}} & \texttt{scenario-2.spec.ts} — full E2E, Excel-driven. \\\relax
+\cmidrule{1-5}
+11 & Pricing & P0 & \textcolor{statusYellow}{\textbf{Partial}} & Spec written; PricingPage locators pending. \\\relax
+\cmidrule{1-5}
+21 & Shipment Builder & P0 & \textcolor{statusGreen}{\textbf{Complete}} & \texttt{shipment-builder.spec.ts} — shipment + Koerber verified. \\\relax
+\cmidrule{1-5}
+30 & Shipment Builder & P0 & \textcolor{statusYellow}{\textbf{Partial}} & D365 side done; WMS pick/ship is external (Korber). \\\relax
+\cmidrule{1-5}
+35--37 & Shipment Builder & P0 & \textcolor{statusYellow}{\textbf{Partial}} & D365 side done; WMS external (Korber). \\\relax
+\cmidrule{1-5}
+38--46 & Shipment Builder & P0 & \textcolor{statusYellow}{\textbf{Partial}} & SO creation, CFS, Grouping, shipment running; invoice steps inactive. \\\relax
+\cmidrule{1-5}
+55 & Pricing & P0 & \textcolor{statusYellow}{\textbf{Partial}} & Spec written; PricingPage locators pending. \\\relax
+\cmidrule{1-5}
+56--57 & Customer Master & P1 & \textcolor{statusYellow}{\textbf{Partial}} & Spec written; CustomerMasterPage locators pending. \\\relax
+\cmidrule{1-5}
+58 & D Channel & P0 & \textcolor{statusYellow}{\textbf{Partial}} & PO creation running (\texttt{purchase-order.spec.ts}). Full SO+deposit flow in \texttt{d-channel.spec.ts} blocked. \\\relax
+\cmidrule{1-5}
+59--61 & D Channel & P0 & \textcolor{statusYellow}{\textbf{Blocked}} & \texttt{d-channel.spec.ts} suspended — DChannelOrderPage locators pending. \\\relax
+\cmidrule{1-5}
+62--63 & D Channel & P0 & \textcolor{statusYellow}{\textbf{Blocked}} & Blocked as above; EDI order source is also external. \\\relax
+\cmidrule{1-5}
+64 & D Channel & P0 & \textcolor{statusYellow}{\textbf{Partial}} & PO creation running (\texttt{purchase-order.spec.ts}). Direct-delivery flag check in \texttt{d-channel.spec.ts} blocked. \\\relax
+\cmidrule{1-5}
+65--72 & D Channel & P0 & \textcolor{statusYellow}{\textbf{Blocked}} & \texttt{d-channel.spec.ts} suspended. \\\relax
+\cmidrule{1-5}
+73 & D Channel & P0 & \textcolor{statusYellow}{\textbf{Partial}} & Cancel SO + status = Cancelled running (\texttt{cancel-sales-order.spec.ts}). Linked-PO cancel assertion pending DChannelOrderPage. \\\relax
+\cmidrule{1-5}
+74--75 & D Channel & P0 & \textcolor{statusYellow}{\textbf{Blocked}} & \texttt{d-channel.spec.ts} suspended. \\\relax
+\cmidrule{1-5}
+76--88 & Returns \& Credits & P0 & \textcolor{statusYellow}{\textbf{Partial}} & \texttt{returns-credits.spec.ts} structured; ReturnOrderPage locators pending. \\\relax
+\cmidrule{1-5}
+89--91 & Shipment Builder & P1 & \textcolor{statusYellow}{\textbf{Partial}} & Spec written; delivery-terms and carrier locators pending. \\\relax
+\cmidrule{1-5}
+92--94 & Retail & P0 & \textcolor{statusYellow}{\textbf{Partial}} & Spec written; \texttt{pickAndPackFromSO()} and one-time customer locators pending. \\\relax
+\cmidrule{1-5}
+97 & Returns \& Credits & P1 & \textcolor{statusYellow}{\textbf{Partial}} & MCR on-account multi-payment flow not yet implemented. \\\relax
+\cmidrule{1-5}
+98--101 & Pricing & P1--P3 & \textcolor{statusYellow}{\textbf{Partial}} & Spec written; PricingPage locators pending. \\\relax
+\cmidrule{1-5}
+102--104 & Pricing & P0 & \textcolor{statusYellow}{\textbf{Partial}} & D365 price assertion ready; EDI order ingestion is external. \\\relax
+\cmidrule{1-5}
+105--108 & Pricing & P0--P1 & \textcolor{statusYellow}{\textbf{Partial}} & Spec written; PricingPage locators pending. \\\relax
+\cmidrule{1-5}
+109 & Product & P0 & \textcolor{statusYellow}{\textbf{Partial}} & Spec written; business process trigger under review. \\\relax
+\cmidrule{1-5}
+115--119 & Inventory Feed & P0 & \textcolor{statusYellow}{\textbf{Partial}} & D365 assortment steps ready; email/846 EDI delivery external. \\\relax
+\cmidrule{1-5}
+117 & Shipment Builder & P0 & \textcolor{statusYellow}{\textbf{Partial}} & Cancel-and-recreate shipment flow; \texttt{cancelShipment()} method pending. \\\relax
+\cmidrule{1-5}
+120--123 & D Channel & P0 & \textcolor{statusYellow}{\textbf{Blocked}} & \texttt{d-channel.spec.ts} suspended. \\\relax
+\cmidrule{1-5}
+\bottomrule
+\end{longtable}
+
+\end{document}

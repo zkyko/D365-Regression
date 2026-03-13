@@ -1,0 +1,190 @@
+﻿\n--- PARTIAL REASONS ---
+Scenario 1:
+  - scenario-2.spec.ts (Line 150: console.warn(`No saved card rows found for hint ${cardHint}; adding card via Scenario 1 fallback data.`);)
+Scenario 2:
+  - pricing.spec.ts (Line 56: // TODO: Set Order Source = WEB and Ship Complete = Yes (same as Scenario 2 TODO 1))
+  - shipment-builder.spec.ts (Line 63: // TODO: Set Order Source = WEB, Ship Complete = Yes (Scenario 2 TODO 1))
+  - shipment-builder.spec.ts (Line 82: // TODO: Filter by today (Scenario 2 TODO 3))
+  - shipment-builder.spec.ts (Line 188: // TODO: click sales order link back from shipment builder (Scenario 2 TODO 4))
+  - shipment-builder.spec.ts (Line 193: // TODO: uncomment after pick/pack is resolved)
+  - shipment-builder.spec.ts (Line 198: // TODO: uncomment after invoice is done)
+  - shipment-builder.spec.ts (Line 202: console.warn(`ΓÜá Scenario ${scenarioId} ΓÇö INCOMPLETE: pick/pack + invoice steps pending Scenario 2 TODO 4 resolution.`);)
+Scenario 11:
+  - pricing.spec.ts (Line 73: // TODO: Check freight charges are showing correctly for expedited shipment)
+  - pricing.spec.ts (Line 77: console.warn('ΓÜá Scenario 11 ΓÇö INCOMPLETE: PricingPage locators not yet confirmed. See Pages/PricingPage.ts');)
+Scenario 30:
+  - shipment-builder.spec.ts (Line 121: console.warn('ΓÜá Scenario 30 ΓÇö PARTIAL: Korber WMS is external. Only D365 status verification is automatable.');)
+  - shipment-builder.spec.ts (Line 122: console.warn('  After Korber processes the pick/ship, verify D365 SO/Shipment status reflects it.');)
+  - shipment-builder.spec.ts (Line 135: console.warn(`ΓÜá Scenario ${scenarioId} ΓÇö PARTIAL: Korber WMS is external. D365 status verification only.`);)
+Scenario 55:
+  - pricing.spec.ts (Line 124: console.warn('ΓÜá Scenario 55 ΓÇö INCOMPLETE: PricingPage locators not yet confirmed. See Pages/PricingPage.ts');)
+Scenario 56:
+  - customer-master.spec.ts (Line 55: console.warn('ΓÜá Scenario 56 ΓÇö INCOMPLETE (P1): CustomerMasterPage locators not yet confirmed. See Pages/CustomerMasterPage.ts');)
+Scenario 57:
+  - customer-master.spec.ts (Line 93: console.warn('ΓÜá Scenario 57 ΓÇö INCOMPLETE (P1): CustomerMasterPage + payment method locators.');)
+Scenario 58:
+  - d-channel.spec.ts (Line 87: // TODO: Navigate to linked PO and verify status)
+  - d-channel.spec.ts (Line 91: console.warn('ΓÜá Scenario 58 ΓÇö INCOMPLETE: DChannelOrderPage locators not yet confirmed. See Pages/DChannelOrderPage.ts');)
+Scenario 59:
+  - d-channel.spec.ts (Line 105: // TODO: Same as Scenario 58 but:)
+  - d-channel.spec.ts (Line 116: console.warn('ΓÜá Scenario 59 ΓÇö INCOMPLETE: DChannelOrderPage locators not yet confirmed.');)
+  - d-channel.spec.ts (Line 249: // TODO: Navigate to confirmed D channel SO)
+  - d-channel.spec.ts (Line 270: // TODO: Create S59-type order first)
+Scenario 60:
+  - d-channel.spec.ts (Line 130: // TODO: Same pattern ΓÇö customer carries freight, transportation charge, no deposit)
+  - d-channel.spec.ts (Line 133: console.warn('ΓÜá Scenario 60 ΓÇö INCOMPLETE: DChannelOrderPage locators not yet confirmed.');)
+Scenario 61:
+  - d-channel.spec.ts (Line 146: // TODO: FH carries freight, freight charges, no deposit)
+  - d-channel.spec.ts (Line 147: console.warn('ΓÜá Scenario 61 ΓÇö INCOMPLETE: DChannelOrderPage locators not yet confirmed.');)
+Scenario 62:
+  - d-channel.spec.ts (Line 171: console.warn('ΓÜá Scenario 62 ΓÇö PARTIAL (EDI external). D365 verification only after EDI import.');)
+Scenario 63:
+  - d-channel.spec.ts (Line 184: console.warn('ΓÜá Scenario 63 ΓÇö PARTIAL (EDI external). D365 verification only after EDI import.');)
+Scenario 64:
+  - d-channel.spec.ts (Line 198: // TODO: Steps:)
+  - d-channel.spec.ts (Line 205: // TODO: Add verifyCompleteButtonDisabled() or similar check)
+  - d-channel.spec.ts (Line 208: console.warn('ΓÜá Scenario 64 ΓÇö INCOMPLETE: Container item setup + Complete block verification needed.');)
+Scenario 65:
+  - d-channel.spec.ts (Line 222: // TODO:)
+  - d-channel.spec.ts (Line 232: console.warn('ΓÜá Scenario 65 ΓÇö INCOMPLETE: Multi-vendor D channel locators not yet confirmed.');)
+Scenario 66:
+  - d-channel.spec.ts (Line 252: console.warn('ΓÜá Scenario 66 ΓÇö INCOMPLETE: D channel post packing slip.');)
+Scenario 67:
+  - d-channel.spec.ts (Line 273: // TODO: Verify the linked PO quantity also updated)
+  - d-channel.spec.ts (Line 277: console.warn('ΓÜá Scenario 67 ΓÇö INCOMPLETE: D channel quantity change.');)
+Scenario 68:
+  - d-channel.spec.ts (Line 291: // TODO: Create S59-type order, then update price)
+  - d-channel.spec.ts (Line 294: console.warn('ΓÜá Scenario 68 ΓÇö INCOMPLETE: D channel price update.');)
+Scenario 69:
+  - d-channel.spec.ts (Line 308: // TODO: Create S58-type order (customer carries freight, deposit))
+  - d-channel.spec.ts (Line 316: console.warn('ΓÜá Scenario 69 ΓÇö INCOMPLETE: Add SO line after PO created.');)
+  - d-channel.spec.ts (Line 332: console.warn('ΓÜá Scenario 70 ΓÇö INCOMPLETE: Add SO line after PO, FH freight.');)
+Scenario 70:
+  - d-channel.spec.ts (Line 330: // TODO: Same as Scenario 69 but FH carries freight (S59-type order))
+Scenario 71:
+  - d-channel.spec.ts (Line 349: // TODO: Find and use deposit flow)
+  - d-channel.spec.ts (Line 352: console.warn('ΓÜá Scenario 71 ΓÇö INCOMPLETE: Deposit apply flow not yet implemented.');)
+Scenario 72:
+  - d-channel.spec.ts (Line 365: // TODO: Same as Scenario 71 but S59-type)
+  - d-channel.spec.ts (Line 366: console.warn('ΓÜá Scenario 72 ΓÇö INCOMPLETE: Deposit apply flow (FH carries freight).');)
+Scenario 73:
+  - d-channel.spec.ts (Line 393: console.warn('ΓÜá Scenario 73 ΓÇö INCOMPLETE: D channel cancel + PO cancel verification.');)
+Scenario 74:
+  - d-channel.spec.ts (Line 412: console.warn('ΓÜá Scenario 74 ΓÇö INCOMPLETE: Cancel line + allocation release.');)
+Scenario 75:
+  - d-channel.spec.ts (Line 426: // TODO: Find the EDI order and cancel it, verify allocations)
+  - d-channel.spec.ts (Line 427: console.warn('ΓÜá Scenario 75 ΓÇö INCOMPLETE: Cancel EDI D channel SO.');)
+Scenario 76:
+  - returns-credits.spec.ts (Line 65: console.warn('ΓÜá Scenario 76 ΓÇö INCOMPLETE: ReturnOrderPage locators not yet confirmed. See Pages/ReturnOrderPage.ts');)
+Scenario 77:
+  - returns-credits.spec.ts (Line 80: // TODO: Same as Scenario 76 but inventory IS returning)
+  - returns-credits.spec.ts (Line 91: console.warn('ΓÜá Scenario 77 ΓÇö INCOMPLETE: Credit with inventory return.');)
+Scenario 78:
+  - returns-credits.spec.ts (Line 106: // TODO:)
+  - returns-credits.spec.ts (Line 120: console.warn('ΓÜá Scenario 78 ΓÇö INCOMPLETE: Replacement + inspection notes + RMA.');)
+  - returns-credits.spec.ts (Line 139: console.warn('ΓÜá Scenario 79 ΓÇö INCOMPLETE: Replacement + inventory + inspection notes.');)
+  - returns-credits.spec.ts (Line 285: // TODO: Find the replacement SO generated from Scenario 78)
+Scenario 79:
+  - returns-credits.spec.ts (Line 135: // TODO: Same as Scenario 78 but inventory IS returning as well)
+Scenario 80:
+  - returns-credits.spec.ts (Line 154: // TODO:)
+  - returns-credits.spec.ts (Line 162: console.warn('ΓÜá Scenario 80 ΓÇö INCOMPLETE: On-account credit feature.');)
+Scenario 81:
+  - returns-credits.spec.ts (Line 205: console.warn('ΓÜá Scenario 81 ΓÇö INCOMPLETE: On-account payment in MCR.');)
+Scenario 82:
+  - returns-credits.spec.ts (Line 226: // TODO: MCROrderRecapPage needs a multi-payment method approach)
+  - returns-credits.spec.ts (Line 228: console.warn('ΓÜá Scenario 82 ΓÇö INCOMPLETE: Multi-payment in MCR (credit + CC).');)
+Scenario 86:
+  - returns-credits.spec.ts (Line 309: console.warn('ΓÜá Scenario 88 ΓÇö INCOMPLETE: Pick/pack replacement from S86. Need replacement SO number.');)
+Scenario 87:
+  - returns-credits.spec.ts (Line 291: console.warn('ΓÜá Scenario 87 ΓÇö INCOMPLETE: Pick/pack replacement from S78. Need replacement SO number.');)
+Scenario 89:
+  - shipment-builder.spec.ts (Line 252: console.warn('ΓÜá Scenario 89 ΓÇö INCOMPLETE: delivery terms / carrier locators not yet confirmed.');)
+Scenario 90:
+  - shipment-builder.spec.ts (Line 266: // TODO: Create SO with out-of-stock large art item)
+  - shipment-builder.spec.ts (Line 267: // TODO: Set delivery terms = Third party, carrier = LTL)
+  - shipment-builder.spec.ts (Line 270: console.warn('ΓÜá Scenario 90 ΓÇö INCOMPLETE (P1): Large art LTL, out of stock item.');)
+Scenario 91:
+  - shipment-builder.spec.ts (Line 284: // TODO: Create SO with 2 lines (art item + furniture item))
+  - shipment-builder.spec.ts (Line 285: // TODO: Set delivery terms = Third party, carrier = LTL)
+  - shipment-builder.spec.ts (Line 288: console.warn('ΓÜá Scenario 91 ΓÇö INCOMPLETE (P1): Art + furniture multi-line LTL.');)
+Scenario 92:
+  - retail.spec.ts (Line 82: // TODO: Check inventory on-hand for the item)
+  - retail.spec.ts (Line 87: console.warn('ΓÜá Scenario 92 ΓÇö INCOMPLETE: Pick/pack directly from SO form (outside SB) locators needed.');)
+  - retail.spec.ts (Line 88: console.warn('  TODO: Add pickAndPackFromSO() to Pages/SalesOrderPage.ts');)
+  - retail.spec.ts (Line 187: // TODO: soPage.pickAndPackFromSO() ΓÇö same as Scenario 92)
+Scenario 93:
+  - retail.spec.ts (Line 147: console.warn('ΓÜá Scenario 93 ΓÇö INCOMPLETE: One-time customer setup locators needed.');)
+Scenario 94:
+  - retail.spec.ts (Line 193: console.warn('ΓÜá Scenario 94 ΓÇö INCOMPLETE: On-account payment in MCR + pick/pack from SO form.');)
+Scenario 97:
+  - returns-credits.spec.ts (Line 344: // TODO: mcrPage.selectOnAccountPayment(data.CreditAmount))
+  - returns-credits.spec.ts (Line 346: console.warn('ΓÜá Scenario 97 ΓÇö INCOMPLETE (P1): Return credit to account + use on replacement.');)
+Scenario 98:
+  - pricing.spec.ts (Line 150: // TODO: Verify coupon applied and price is correct)
+  - pricing.spec.ts (Line 154: console.warn('ΓÜá Scenario 98 ΓÇö INCOMPLETE (P1): Web order with MSA coupon. See Pages/PricingPage.ts');)
+Scenario 99:
+  - pricing.spec.ts (Line 169: // TODO: Create web SO with both MSA coupon item AND Amber Lewis SKU)
+  - pricing.spec.ts (Line 171: // TODO: Add coupon, verify Amber Lewis line is full price, other lines discounted)
+  - pricing.spec.ts (Line 173: console.warn('ΓÜá Scenario 99 ΓÇö INCOMPLETE (P1): Amber Lewis SKU pricing. See Pages/PricingPage.ts');)
+Scenario 100:
+  - pricing.spec.ts (Line 185: // TODO: Create web SO with LTO item, add coupon, verify pricing)
+  - pricing.spec.ts (Line 186: console.warn('ΓÜá Scenario 100 ΓÇö INCOMPLETE (P2): LTO + coupon pricing.');)
+Scenario 101:
+  - pricing.spec.ts (Line 198: // TODO: Create web SO with hardmarked item, override price, verify)
+  - pricing.spec.ts (Line 199: console.warn('ΓÜá Scenario 101 ΓÇö INCOMPLETE (P3): Hardmark pricing.');)
+Scenario 102:
+  - pricing.spec.ts (Line 226: console.warn('ΓÜá Scenario 102 ΓÇö PARTIAL (EDI external). D365 verification only. See PLAN.md.');)
+Scenario 103:
+  - pricing.spec.ts (Line 239: // TODO: Verify D365 received West Elm / Lulu orders with correct pricing)
+  - pricing.spec.ts (Line 240: console.warn('ΓÜá Scenario 103 ΓÇö PARTIAL (EDI external). D365 verification only. See PLAN.md.');)
+Scenario 104:
+  - pricing.spec.ts (Line 253: // TODO: Verify D365 received Lumens orders with correct trade pricing)
+  - pricing.spec.ts (Line 254: console.warn('ΓÜá Scenario 104 ΓÇö PARTIAL (EDI external). D365 verification only. See PLAN.md.');)
+Scenario 105:
+  - pricing.spec.ts (Line 268: // TODO: Set customer tier expiry date to today/past)
+  - pricing.spec.ts (Line 274: // TODO: Trigger batch job ΓÇö find "Loyalty" batch job in D365 batch processing)
+  - pricing.spec.ts (Line 276: console.warn('ΓÜá Scenario 105 ΓÇö INCOMPLETE (P1): Loyalty batch job. See Pages/PricingPage.ts');)
+Scenario 106:
+  - pricing.spec.ts (Line 289: // TODO: Create SO ΓåÆ confirm ΓåÆ verify price on:)
+  - pricing.spec.ts (Line 296: console.warn('ΓÜá Scenario 106 ΓÇö INCOMPLETE (P1): Document pricing validation.');)
+Scenario 107:
+  - pricing.spec.ts (Line 310: // TODO:)
+  - pricing.spec.ts (Line 319: console.warn('ΓÜá Scenario 107 ΓÇö INCOMPLETE (P0): Tier upgrade pricing. See Pages/PricingPage.ts');)
+Scenario 108:
+  - pricing.spec.ts (Line 341: console.warn('ΓÜá Scenario 108 ΓÇö INCOMPLETE (P1): Add coupon to existing SO. See Pages/PricingPage.ts');)
+Scenario 109:
+  - product.spec.ts (Line 40: // ΓöÇΓöÇΓöÇ TODO: Before implementing this test, clarify with business: ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ)
+  - product.spec.ts (Line 78: console.warn('ΓÜá Scenario 109 ΓÇö INCOMPLETE (P0): Product load process not yet understood.');)
+  - product.spec.ts (Line 79: console.warn('  TODO: Clarify with business what triggers the product load/update.');)
+  - product.spec.ts (Line 80: console.warn('  TODO: Create Pages/ProductPage.ts once the process is understood.');)
+  - product.spec.ts (Line 81: console.warn('  TODO: Add test-data/Product.xlsx with: ItemNumber, ExpectedName, ExpectedPrice, etc.');)
+Scenario 115:
+  - inventory-feed.spec.ts (Line 56: console.warn('ΓÜá Scenario 115 ΓÇö INCOMPLETE: InventoryFeedPage locators not yet confirmed. See Pages/InventoryFeedPage.ts');)
+  - inventory-feed.spec.ts (Line 57: console.warn('  External feed verification (email) is not automatable from D365 UI.');)
+Scenario 116:
+  - inventory-feed.spec.ts (Line 82: console.warn('ΓÜá Scenario 116 ΓÇö INCOMPLETE: InventoryFeedPage locators not yet confirmed.');)
+  - inventory-feed.spec.ts (Line 83: console.warn('  External feed verification (846 EDI) is not automatable from D365 UI.');)
+Scenario 117:
+  - shipment-builder.spec.ts (Line 350: console.warn('ΓÜá Scenario 117 ΓÇö INCOMPLETE (P0): cancelShipment() method not yet added to ShipmentBuilderPage.ts');)
+  - shipment-builder.spec.ts (Line 351: console.warn('  TODO: Add cancelShipment() to Pages/ShipmentBuilderPage.ts');)
+Scenario 118:
+  - inventory-feed.spec.ts (Line 113: console.warn('ΓÜá Scenario 118 ΓÇö INCOMPLETE: InventoryFeedPage locators not yet confirmed.');)
+Scenario 119:
+  - inventory-feed.spec.ts (Line 137: console.warn('ΓÜá Scenario 119 ΓÇö INCOMPLETE: InventoryFeedPage locators not yet confirmed.');)
+Scenario 120:
+  - d-channel.spec.ts (Line 449: console.warn('ΓÜá Scenario 120 ΓÇö INCOMPLETE: Address change flows to PO.');)
+Scenario 121:
+  - d-channel.spec.ts (Line 462: // TODO: Same as Scenario 120 but S59-type order)
+  - d-channel.spec.ts (Line 463: console.warn('ΓÜá Scenario 121 ΓÇö INCOMPLETE: Address change S59 type flows to PO.');)
+Scenario 122:
+  - d-channel.spec.ts (Line 477: // TODO: Create D channel SO with a SKU that has no product variant)
+  - d-channel.spec.ts (Line 481: console.warn('ΓÜá Scenario 122 ΓÇö INCOMPLETE: SKU without variant D channel flow.');)
+Scenario 123:
+  - d-channel.spec.ts (Line 495: // TODO: Create D channel SO with a SKU that HAS product variants)
+  - d-channel.spec.ts (Line 501: console.warn('ΓÜá Scenario 123 ΓÇö INCOMPLETE: Variant SKU vendor defaulting + BW flow.');)
+\n--- RECALCULATED SUMMARY ---
+Total Expected: 85
+Fully Covered: 2
+Partially Covered: 61
+Missing: 22
