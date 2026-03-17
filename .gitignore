@@ -39,6 +39,12 @@ Thumbs.db
 *.swo
 *~
 
+# BrowserStack SDK auto-generated files
+log/
+browserstackSetupConfig.json
+playwright-browserstack-sdk.config.ts
+playwright-browserstack-sdk.config.temp.json
+
 # Logs
 logs/
 *.log

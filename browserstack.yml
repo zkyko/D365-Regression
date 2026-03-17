@@ -6,6 +6,9 @@ buildName: D365 Regression Build
 
 framework: playwright
 
+# Root folder that contains all spec files
+testSuite: ./tests
+
 # Map to your Playwright projects on BrowserStack
 platforms:
   - os: Windows
@@ -14,27 +17,16 @@ platforms:
     browserVersion: latest
     playwrightConfigOptions:
       name: chromium
-  - os: Windows
-    osVersion: 11
-    browserName: firefox
-    browserVersion: latest
-    playwrightConfigOptions:
-      name: firefox
-  - os: Windows
-    osVersion: 11
-    browserName: playwright-webkit
-    browserVersion: latest
-    playwrightConfigOptions:
-      name: webkit
 
 # Number of parallel sessions; tune based on your BrowserStack plan
 parallels: 3
 
-# Set to true if you need to test internal/staging URLs via BrowserStack Local
+# D365 sandbox URL is publicly reachable — Local tunnel not needed
 browserstackLocal: false
 
-# Optional: tweak defaults for debugging
+# Debug / observability
 debug: true
 networkLogs: true
 video: true
+consoleLogs: verbose
 

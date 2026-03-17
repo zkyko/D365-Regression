@@ -58,6 +58,26 @@ export class DChannelOrderPage extends BasePage {
   readonly confirmYesBtn: Locator = this.page.locator(`[data-dyn-controlname="Yes"][name="Yes"]`);
   readonly commandButtonOK: Locator = this.page.locator(`[data-dyn-controlname="CommandButtonOK"][name="CommandButtonOK"]`);
 
+  // ─── Toggle / popup locators (more precise — ported from PODchannelPage) ──
+  // XPath targets the actual toggle-box span; aria-checked tells us current state.
+  readonly rsmDelayPaymentToggle: Locator = this.page.locator(`//span[contains(@aria-describedby,"DelayPayment")][@class="toggle-box"]`);
+  // Credit-limit exceeded confirmation popup
+  readonly creditLimitYes: Locator = this.page.locator(`[data-dyn-form-name="SysBoxForm"] button:has-text("Yes")`);
+
+  // ─── Ship-date warning popup ──────────────────────────────────────────────
+  // Targets the button-label <span> whose id contains "SysBoxForm" and exact text "Yes"/"No".
+  // The span id pattern is SysBoxForm_N_Yes_label / SysBoxForm_N_No_label (N = dynamic session).
+  // Clicking the span activates the button via event bubbling.
+  readonly shipDateWarningYes: Locator = this.page.locator(`//span[@class="button-label"][contains(@id,"SysBoxForm")][normalize-space(text())="Yes"]`);
+  readonly shipDateWarningNo: Locator  = this.page.locator(`//span[@class="button-label"][contains(@id,"SysBoxForm")][normalize-space(text())="No"]`);
+
+  // ─── MCR payment fallback locators ───────────────────────────────────────
+  // Used when the initial tender type is rejected and we need to retry with type "2"
+  readonly paymGridTenderTypeId: Locator = this.page.locator(`//input[contains(@id,"PaymGrid_TenderTypeId")]`);
+  readonly removePaymBtn: Locator = this.page.locator(`//span[contains(@id,"RemovePaymBtn")][@class="button-label"]`);
+  readonly removeConfirmYes: Locator = this.page.locator(`//span[contains(@id,"SysBoxForm")][contains(text(),"Yes")]`);
+  readonly salesTotal: Locator = this.page.locator(`//input[contains(@id,"SalesTotal")]`);
+
   // ─── Charges form ─────────────────────────────────────────────────────────
   readonly chargesCodeInput: Locator = this.page.locator(`[data-dyn-controlname="MarkupTrans_MarkupCode"] input`);
   readonly chargesValueInput: Locator = this.page.locator(`[data-dyn-controlname="MarkupTrans_MarkupValue"] input`);
@@ -93,9 +113,14 @@ export class DChannelOrderPage extends BasePage {
     await this.safeFill(this.custAccountInput, customerAccount);
     await this.waitForProcessing();
 
-    // Toggle delay-payment (required for D-channel deposit flow)
-    await this.safeClick(this.rsmDelayPaymentBtn);
-    await this.waitForProcessing();
+    // Enable delay-payment if not already on (required for D-channel deposit flow).
+    // Use the toggle-box span so we can read aria-checked before deciding to click.
+    await this.rsmDelayPaymentToggle.waitFor({ state: 'visible', timeout: 30_000 });
+    const ariaChecked = await this.rsmDelayPaymentToggle.getAttribute('aria-checked');
+    if (ariaChecked !== 'true') {
+      await this.safeClick(this.rsmDelayPaymentToggle);
+      await this.waitForProcessing();
+    }
 
     // Set Sales origin to "D" (D-channel) — field is in the Administration section
     await this.safeFill(this.salesOriginInput, 'D');
@@ -119,17 +144,70 @@ export class DChannelOrderPage extends BasePage {
    * Set the ship window (from/to dates) on the order Header tab.
    * Fields: rsmHeaderShipmentWindow_rsmShippingStartDate / rsmShippingEndDate
    *
-   * @param fromDate  Start date (MM/DD/YYYY)
-   * @param toDate    End date   (MM/DD/YYYY)
+   * Two popups can appear:
+   *   1. "One or both shipping dates are earlier than today..." — answer controlled by datePrompt.
+   *   2. "This will update the shipment window values on all sales order lines..." — always Yes.
+   * Both use the same SysBoxForm_N_Yes/No pattern; we drain all pending popups after each field.
+   *
+   * @param fromDate    Start date (MM/DD/YYYY)
+   * @param toDate      End date   (MM/DD/YYYY)
+   * @param datePrompt  'Yes' | 'No' — answer to the ship-date warning popup (default: 'Yes')
    */
-  async setShipWindow(fromDate: string, toDate: string): Promise<void> {
+  async setShipWindow(fromDate: string, toDate: string, datePrompt: 'Yes' | 'No' = 'Yes'): Promise<void> {
     await this.safeClick(this.headerTab);
     await this.waitForProcessing();
+
     await this.safeFill(this.shipWindowStart, fromDate);
     await this.shipWindowStart.press('Tab');
+    await this.waitForProcessing();
+    // SysBoxForm popups ("dates earlier than today", "update all order lines")
+    // are now handled globally by installPopupHandlers() → addLocatorHandler.
+    // No manual dismiss needed here.
+
     await this.safeFill(this.shipWindowEnd, toDate);
     await this.shipWindowEnd.press('Tab');
     await this.waitForProcessing();
+  }
+
+  /**
+   * Drain any SysBoxForm popups that appear after setting ship window dates.
+   * Handles two distinct dialogs:
+   *   - "dates earlier than today" → answered by datePrompt
+   *   - "update all order lines"   → always Yes
+   * Loops until no more popups are visible (D365 can chain them).
+   *
+   * IMPORTANT: D365 fires these popups via client-side JS, which can happen
+   * AFTER networkidle. We add a short fixed wait before the first check so the
+   * popup has time to render before we test for visibility.
+   */
+  private async dismissShipWindowPopups(datePrompt: 'Yes' | 'No'): Promise<void> {
+    // Give D365 client-side JS time to render the popup (fired after networkidle)
+    await this.page.waitForTimeout(1_500);
+
+    for (let i = 0; i < 3; i++) {
+      const yesVisible = await this.shipDateWarningYes.isVisible({ timeout: 4_000 }).catch(() => false);
+      if (!yesVisible) break;
+
+      // Read the dialog message to distinguish which popup this is
+      const msgText = await this.page
+        .locator(`[data-dyn-controlname="FormStaticTextControl1"]:visible`)
+        .first()
+        .textContent({ timeout: 2_000 })
+        .catch(() => '');
+
+      const isDateWarning  = msgText?.includes('earlier than today');
+      const isLinesWarning = msgText?.includes('update the shipment window');
+
+      if (isDateWarning) {
+        await this.safeClick(datePrompt === 'Yes' ? this.shipDateWarningYes : this.shipDateWarningNo);
+      } else {
+        // Covers isLinesWarning and any unknown SysBoxForm popup — always Yes
+        await this.safeClick(this.shipDateWarningYes);
+      }
+      await this.waitForProcessing();
+      // Short pause before looping in case a second popup is chained
+      await this.page.waitForTimeout(1_000);
+    }
   }
 
   /**
@@ -252,16 +330,34 @@ export class DChannelOrderPage extends BasePage {
    * Change the delivery address on the Sales Order via the "Other address" button.
    * Scenarios 120/121.
    *
-   * @param addressName  The name of the address record to select
+   * @param addressName  The display name for the address
+   * @param street       Street line
+   * @param city         City
+   * @param state        State / province
+   * @param zip          ZIP / postal code
    */
-  async changeDeliveryAddress(addressName: string): Promise<void> {
+  async changeDeliveryAddress(addressName: string, street: string, city: string, state: string, zip: string): Promise<void> {
     await this.safeClick(this.page.locator(`[data-dyn-controlname="MCRLogisticsLocationSelectHeader1"]`));
     await this.waitForProcessing();
-    // Search and select the address by name
-    const searchInput = this.page.locator(`input[aria-label="Name"], input[placeholder*="Name"]`).first();
-    await this.safeFill(searchInput, addressName);
-    await searchInput.press('Enter');
-    await this.waitForProcessing();
+    // Fill the address fields in the D365 address dialog
+    const nameInput = this.page.locator(`input[aria-label="Name"], input[placeholder*="Name"]`).first();
+    await this.safeFill(nameInput, addressName);
+    const streetInput = this.page.locator(`input[aria-label="Street"], input[name*="Street"]`).first();
+    if (await streetInput.isVisible({ timeout: 3_000 }).catch(() => false)) {
+      await this.safeFill(streetInput, street);
+    }
+    const cityInput = this.page.locator(`input[aria-label="City"], input[name*="City"]`).first();
+    if (await cityInput.isVisible({ timeout: 3_000 }).catch(() => false)) {
+      await this.safeFill(cityInput, city);
+    }
+    const stateInput = this.page.locator(`input[aria-label="State"], input[name*="State"]`).first();
+    if (await stateInput.isVisible({ timeout: 3_000 }).catch(() => false)) {
+      await this.safeFill(stateInput, state);
+    }
+    const zipInput = this.page.locator(`input[aria-label="ZIP/postal code"], input[name*="ZipCode"], input[name*="Zip"]`).first();
+    if (await zipInput.isVisible({ timeout: 3_000 }).catch(() => false)) {
+      await this.safeFill(zipInput, zip);
+    }
     await this.safeClick(this.page.locator(`[data-dyn-controlname="SystemDefinedOKButton"], [data-dyn-controlname="OK"][name="OK"]`).first());
     await this.waitForProcessing();
   }
@@ -346,8 +442,66 @@ export class DChannelOrderPage extends BasePage {
     await amtInput.press('Tab');
     await this.safeClick(this.mcrOKBtn);
     await this.waitForProcessing();
+
+    // Handle optional credit-limit exceeded popup before submitting
+    const creditLimitVisible = await this.creditLimitYes.isVisible().catch(() => false);
+    if (creditLimitVisible) {
+      await this.safeClick(this.creditLimitYes);
+      await this.waitForProcessing();
+    }
+
     await this.safeClick(this.submitBtn);
     await this.waitForProcessing();
+
+    // ── Payment submit fallback ────────────────────────────────────────────
+    // If MCRSalesOrderRecap is still open after Submit, the tender type was
+    // rejected. Remove it, re-add with method "2" (Customer Account) using
+    // the captured sales total, then retry Submit.
+    const isStillOpen = await this.page
+      .locator(`[data-dyn-form-name="MCRSalesOrderRecap"]`)
+      .isVisible()
+      .catch(() => false);
+
+    if (isStillOpen) {
+      // Step 1 — select existing payment row and remove it
+      await this.safeClick(this.paymGridTenderTypeId);
+      await this.waitForProcessing();
+      await this.safeClick(this.removePaymBtn);
+      await this.waitForProcessing();
+      await this.safeClick(this.removeConfirmYes);
+      await this.waitForProcessing();
+
+      // Step 2 — capture the sales total (may contain commas, e.g. "124,072.50")
+      const salesTotalValue = await this.salesTotal.inputValue();
+      console.log(`📋 Captured Sales Total for fallback: ${salesTotalValue}`);
+
+      // Step 3 — add new payment with method "2" via the payment dialog
+      await this.safeClick(this.addDepositBtn);
+      await this.waitForProcessing();
+      const paymInput = this.page
+        .locator(`[data-dyn-form-name="MCRCustPaymDialog"] [data-dyn-controlname="Identification_TenderTypeId"]`)
+        .locator('input')
+        .first();
+      await paymInput.click();
+      await paymInput.pressSequentially('2', { delay: 150 });
+      await this.waitForLookupOptionsStable();
+      await this.page.waitForTimeout(3_000);
+      await paymInput.press('Enter');
+      await this.waitForProcessing();
+
+      // Step 4 — fill amount field with the captured sales total
+      const amountField = this.page.locator(
+        `[data-dyn-form-name="MCRCustPaymDialog"] [data-dyn-controlname="Identification_Amount"]`,
+      );
+      await this.safeFill(amountField, salesTotalValue.replace(/,/g, ''));
+      await this.waitForProcessing();
+
+      // Step 5 — confirm and retry Submit
+      await this.safeClick(this.mcrOKBtn);
+      await this.waitForProcessing();
+      await this.safeClick(this.submitBtn);
+      await this.waitForProcessing();
+    }
   }
 
   /**

@@ -3,6 +3,9 @@ import { defineConfig, devices } from '@playwright/test';
 export default defineConfig({
   testDir: './tests',
 
+  /* Exclude scratch/broken files that are not real test suites */
+  testIgnore: ['**/test-1.spec.ts'],
+
   /* ✅ GLOBAL TEST TIMEOUT (default was 30s) */
   timeout: 120_000, // 2 minutes per test (good for D365)
 
@@ -47,10 +50,11 @@ export default defineConfig({
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
 
-    headless: false,
+    // On BrowserStack / CI, run headless and skip slowMo to save session time
+    headless: !!process.env.CI,
     viewport: { width: 1920, height: 1080 },
     launchOptions: {
-      slowMo: 300, // Just enough to see the clicks, but not enough to kill your productivity
+      slowMo: process.env.CI ? 0 : 300,
     },
   },
 
